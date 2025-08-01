@@ -138,7 +138,7 @@
         const audio = document.getElementById('background-music');
         const prevSongButton = document.getElementById('prev-song-button');
         const nextSongButton = document.getElementById('next-song-button');
-        const songs = ['cancion_para_nicol.mp3', 'nombre_de_tu_segunda_cancion.mp3']; 
+        const songs = ['cancion_para_nicol.mp3', 'Those_Eyes.mp3']; 
         let currentSongIndex = 0; let musicStarted = false;
         function loadSong(songIndex) { audio.src = songs[songIndex]; audio.play().catch(error => console.log("Reproducción automática bloqueada.")); }
         function nextSong() { currentSongIndex = (currentSongIndex + 1) % songs.length; loadSong(currentSongIndex); }
