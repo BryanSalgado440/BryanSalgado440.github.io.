@@ -2,178 +2,245 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    
-    <!-- ¡LA LÍNEA MÁS IMPORTANTE PARA EL DISEÑO RESPONSIVO! -->
-    <!-- Esto le dice al celular que use su tamaño de pantalla real. -->
+    <!-- Esta es la línea MÁGICA para el diseño adaptable. ¡Ya estaba aquí! -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Una Sorpresa Para Ti ❤️</title>
+    <title>¡Trabajando para ti!</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600&display=swap');
-
         body {
-            font-family: 'Quicksand', sans-serif;
+            background-color: #fce4ec; 
+            color: #333;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
             margin: 0;
-            padding: 20px;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #music-prompt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* Usamos min-height para mejor adaptabilidad */
-            text-align: center;
-            background: linear-gradient(315deg, #ffdde1, #ee9ca7, #ffdde1, #ee9ca7);
-            background-size: 400% 400%;
-            animation: gradientAnimation 15s ease infinite;
-            overflow: hidden;
+            flex-direction: column;
+            z-index: 100;
+            cursor: pointer;
+            display: none; 
         }
-        
-        @keyframes gradientAnimation { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        
-        #heart-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-        .heart-shape { position: absolute; bottom: -50px; width: 30px; height: 30px; opacity: 0; background-repeat: no-repeat; background-size: contain; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ff7999"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'); animation: floatHeart 15s linear, swayHeart 4s ease-in-out infinite alternate; }
-        @keyframes floatHeart { 0% { transform: translateY(0); opacity: 0; } 10% { opacity: 0.7; } 90% { opacity: 0.7; } 100% { transform: translateY(-100vh); opacity: 0; } }
-        @keyframes swayHeart { from { transform: translateX(-20px); } to { transform: translateX(20px); } }
+
+        #music-prompt h2 {
+            font-size: 2.5em;
+        }
+
+        #music-prompt p {
+            font-size: 1.2em;
+            margin-top: 0;
+        }
+
+        .content-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box; /* Asegura que el padding no cause desbordamiento */
+        }
 
         .container {
-            background: rgba(255, 255, 255, 0.92);
-            padding: 30px 40px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            max-width: 650px;
+            max-width: 600px;
+            padding: 30px;
+            border-radius: 15px;
+            background-color: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #d81b60;
+        }
+        p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+        #countdown {
+            font-size: 2em;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap; /* Esto ya ayudaba mucho en móviles */
+        }
+        #countdown > div {
+            background-color: #f06292;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        #countdown > div span {
+            display: block;
+            font-size: 0.5em;
+            font-weight: normal;
+        }
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            position: relative;
+            height: 100%;
             z-index: 1;
-            box-sizing: border-box; /* Asegura que el padding no desborde el ancho */
+            pointer-events: none;
+        }
+        .heart {
+            position: absolute;
+            bottom: -50px;
+            font-size: 20px;
+            color: #ff80ab;
+            animation: floatUp 10s infinite linear;
+        }
+        .heart:nth-child(1) { left: 10%; animation-delay: 0s; font-size: 25px; }
+        .heart:nth-child(2) { left: 20%; animation-delay: 2s; animation-duration: 12s; }
+        .heart:nth-child(3) { left: 30%; animation-delay: 4s; }
+        .heart:nth-child(4) { left: 40%; animation-delay: 1s; animation-duration: 15s; font-size: 18px; }
+        .heart:nth-child(5) { left: 50%; animation-delay: 3s; }
+        .heart:nth-child(6) { left: 60%; animation-delay: 5s; font-size: 28px; }
+        .heart:nth-child(7) { left: 70%; animation-delay: 2s; animation-duration: 8s; }
+        .heart:nth-child(8) { left: 80%; animation-delay: 6s; }
+        .heart:nth-child(9) { left: 90%; animation-delay: 1.5s; font-size: 16px; animation-duration: 13s; }
+        .heart:nth-child(10) { left: 55%; animation-delay: 7s; }
+        @keyframes floatUp {
+            to {
+                bottom: 110vh;
+                opacity: 0;
+                transform: rotate(360deg);
+            }
         }
 
-        h1 { font-family: 'Dancing Script', cursive; color: #c83b50; font-size: 3em; margin: 0 0 15px 0; display: flex; justify-content: center; align-items: center; }
-        .heart { color: #e74c3c; font-size: 0.8em; margin-left: 15px; animation: beat 1.5s infinite ease-in-out; }
-        @keyframes beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
-        
-        #timer-container { margin: 15px 0 20px 0; padding: 10px; background-color: rgba(255, 221, 225, 0.5); border-radius: 12px; }
-        .timer-text { margin: 0 0 5px 0; font-size: 1em; color: #555; font-weight: 600; }
-        #countdown { font-size: 1.4em; font-weight: bold; color: #c83b50; }
-        #countdown strong { font-weight: 700; }
+        /* --- NUEVO: MEDIA QUERIES PARA ADAPTAR A MÓVILES Y TABLETS --- */
 
-        .message-box { min-height: 110px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; overflow: hidden; padding: 0 10px; }
-        p#message { font-size: 1.25em; color: #444; font-weight: 600; line-height: 1.6; margin: 0; animation: slideIn 0.8s forwards; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-30px); } }
-        .slide-out { animation: slideOut 0.8s forwards; }
-        
-        .button-group { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 15px; margin-top: 15px; }
-        
-        #message-button { font-family: 'Quicksand', sans-serif; font-weight: 600; background: linear-gradient(45deg, #ff758c, #ff7eb3); color: white; border: none; padding: 16px 30px; font-size: 1em; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 20px rgba(255, 126, 179, 0.5); }
-        #message-button:hover { transform: translateY(-4px) scale(1.05); }
-
-        .music-button { font-family: 'Quicksand', sans-serif; font-weight: 600; background: #d1c4e9; color: #4527a0; border: none; padding: 10px 20px; font-size: 0.9em; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); display: none; }
-        .music-button:hover { background: #b39ddb; transform: translateY(-2px); }
-
-
-        /* ======================================================= */
-        /* --- ESTILOS RESPONSIVE (LA MAGIA PARA CELULARES) --- */
-        /* ======================================================= */
-        /* Estas reglas se aplican SOLO si la pantalla mide 768px o menos */
+        /* Estilos para pantallas de hasta 768px de ancho (tablets y móviles grandes) */
         @media (max-width: 768px) {
-            body {
-                padding: 10px; /* Menos padding en pantallas pequeñas */
-                min-height: -webkit-fill-available; /* Ajuste para altura en iOS */
-            }
-            .container {
-                padding: 20px 15px; /* Menos padding interno para dar más espacio */
-                max-width: 95%;   /* El contenedor ocupa casi todo el ancho */
-            }
             h1 {
-                font-size: 2.2em; /* Título más pequeño */
+                font-size: 2em; /* Reducimos el título principal */
             }
-            p#message {
-                font-size: 1.1em; /* Texto del mensaje ligeramente más pequeño */
+            p {
+                font-size: 1.1em; /* Reducimos el párrafo */
             }
             #countdown {
-                font-size: 1.15em; /* Contador más pequeño */
-                word-wrap: break-word; /* Permite que el texto se rompa si es muy largo */
+                font-size: 1.5em; /* Reducimos los números del contador */
+                gap: 10px; /* Menos espacio entre los contadores */
             }
-            #message-button {
-                padding: 14px 25px; /* Botón principal un poco más compacto */
-                font-size: 0.95em;
-            }
-            .music-button {
-                padding: 8px 16px; /* Botones de música más pequeños */
-                font-size: 0.85em;
+            .container {
+                padding: 20px; /* Menos espacio interno en el contenedor */
             }
         }
+
+        /* Estilos para pantallas de hasta 480px de ancho (móviles pequeños) */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.6em; /* Hacemos el título aún más pequeño */
+            }
+            p {
+                font-size: 1em; /* Párrafo más pequeño */
+            }
+            #countdown > div {
+                padding: 8px 10px; /* Hacemos las cajas del contador más pequeñas */
+            }
+            #countdown {
+                font-size: 1.3em;
+            }
+            .content-wrapper {
+                padding: 10px; /* Reducimos el padding general de la página */
+            }
+        }
+        
     </style>
 </head>
 <body>
-    <div id="heart-container"></div>
-    <div class="container">
-        <h1>Para la mujer más hermosa del mundo <span class="heart">❤</span></h1>
-        <div id="timer-container">
-            <p class="timer-text">Soy el hombre más afortunado desde hace...</p>
-            <div id="countdown">Calculando...</div>
+
+    <!-- El resto del HTML y el JavaScript no necesitan cambios -->
+
+    <div id="music-prompt">
+        <div>
+            <h2>¡Bienvenida! ❤️</h2>
+            <p>(Haz clic aquí para activar la música)</p>
         </div>
-        <div class="message-box">
-            <p id="message">Toca el botón para empezar esta pequeña sorpresa que te preparé con todo mi cariño Nicol.</p>
-        </div>
-        <div class="button-group">
-            <button id="prev-song-button" class="music-button">🎵 Anterior</button>
-            <button id="message-button">Siguiente Mensaje Mágico ✨</button>
-            <button id="next-song-button" class="music-button">Siguiente 🎵</button>
-        </div>
-        <audio id="background-music" loop></audio>
     </div>
-    
+
+    <div class="hearts-container">
+        <div class="heart">❤️</div><div class="heart">❤️</div><div class="heart">❤️</div><div class="heart">❤️</div><div class="heart">❤️</div><div class="heart">❤️</div><div class="heart">❤️</div><div class="heart">❤️</div><div class="heart">❤️</div><div class="heart">❤️</div>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="container">
+            <h1>Hola, hermosa, me has pillado trabajando en su página web, ya se la devolveré pronto. Solo estoy agregándole algunas cositas para usted. Espero que le guste, te quiere mucho, Bryan ❤</h1>
+            <p>Estará lista muy pronto. Mientras tanto, aquí tienes la cuenta regresiva:</p>
+            <div id="countdown">
+                <div id="dias">00<span>Días</span></div>
+                <div id="horas">00<span>Horas</span></div>
+                <div id="minutos">00<span>Minutos</span></div>
+                <div id="segundos">00<span>Segundos</span></div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="background-music">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
     <script>
-        // El código JavaScript no necesita cambios para el diseño responsivo,
-        // por lo que se mantiene exactamente igual.
-        const heartContainer = document.getElementById('heart-container');
-        for (let i = 0; i < 25; i++) {
-            const heart = document.createElement('div'); heart.classList.add('heart-shape');
-            heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.animationDuration = (Math.random() * 8 + 7) + 's,' + (Math.random() * 3 + 2) + 's';
-            heart.style.animationDelay = Math.random() * 10 + 's';
-            heart.style.transform = `scale(${Math.random() * 0.7 + 0.5})`;
-            heartContainer.appendChild(heart);
-        }
+        // --- SECCIÓN DE CUENTA REGRESIVA ---
+        const fechaLanzamiento = new Date("Aug 11, 2025 00:30:00").getTime();
+        const x = setInterval(function() {
+            const ahora = new Date().getTime();
+            const distancia = fechaLanzamiento - ahora;
+            const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
+            document.getElementById("dias").innerHTML = (dias < 10 ? '0' : '') + dias + "<span>Días</span>";
+            document.getElementById("horas").innerHTML = (horas < 10 ? '0' : '') + horas + "<span>Horas</span>";
+            document.getElementById("minutos").innerHTML = (minutos < 10 ? '0' : '') + minutos + "<span>Minutos</span>";
+            document.getElementById("segundos").innerHTML = (segundos < 10 ? '0' : '') + segundos + "<span>Segundos</span>";
+            if (distancia < 0) {
+                clearInterval(x);
+                document.getElementById("countdown").innerHTML = "¡TU PÁGINA YA ESTÁ LISTA!";
+            }
+        }, 1000);
 
-        const audio = document.getElementById('background-music');
-        const prevSongButton = document.getElementById('prev-song-button');
-        const nextSongButton = document.getElementById('next-song-button');
-        const songs = ['cancion_para_nicol.mp3', 'Those_Eyes.mp3']; 
-        let currentSongIndex = 0; let musicStarted = false;
-        function loadSong(songIndex) { audio.src = songs[songIndex]; audio.play().catch(error => console.log("Reproducción automática bloqueada.")); }
-        function nextSong() { currentSongIndex = (currentSongIndex + 1) % songs.length; loadSong(currentSongIndex); }
-        function prevSong() { currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length; loadSong(currentSongIndex); }
-        prevSongButton.addEventListener('click', prevSong);
-        nextSongButton.addEventListener('click', nextSong);
-
-        const messageElement = document.getElementById('message');
-        const messageButton = document.getElementById('message-button');
-        let currentMessageIndex = -1; let isFirstClick = true;
-        const messages = ["Eres la razón por la que mis días son más bonitos.", "Contigo, cada momento se convierte en un recuerdo inolvidable.", "No solo estás en mi mente, vives en mi corazón.", "Gracias por ser mi paz en medio del caos y el motivo de mi felicidad.", "Me enamoro de ti un poquito más cada día que pasa.", "Tu sonrisa tiene el poder de arreglar cualquier cosa.", "Eres mi aventura favorita y mi puerto seguro, todo en uno.", "No imagino un futuro en el que no estés a mi lado.", "Llegaste y transformaste mi mundo en un lugar maravilloso.", "Te quiero no solo por como eres, sino por como me haces ser y sentir.", "Eres esa canción que no puedo dejar de repetir en mi cabeza.", "Por si no te lo he dicho hoy: eres lo mejor que me ha pasado en mi vida.", "El reloj marca la hora, los días marcan el tiempo pero usted marco lo que un día fue un sueño para mí.", "Te quiero mucho Nicol, eres mi princesa.","Gracias por hacerme el hombre más feliz del mundo.", "Se que he estado ausente estos días pero quiero que recuerdes que siempre te tengo presente.", "Voy a estar contigo aunque la distancia nos separe...", "Te enviaré un beso con el viento, confiándolo a sus suaves caricias.", "Aunque no me veas, sabrás que estáre allí, siempre junto a usted."];
-        function handleMainButtonClick() {
-            if (!musicStarted) { loadSong(currentSongIndex); musicStarted = true; prevSongButton.style.display = 'inline-block'; nextSongButton.style.display = 'inline-block'; }
-            if (isFirstClick) { messageButton.innerHTML = "Te dare el siguiente mensaje 💕"; isFirstClick = false; }
-            messageElement.classList.add('slide-out');
-            setTimeout(() => {
-                let newIndex; do { newIndex = Math.floor(Math.random() * messages.length); } while (newIndex === currentMessageIndex);
-                currentMessageIndex = newIndex;
-                messageElement.innerText = messages[currentMessageIndex];
-                messageElement.classList.remove('slide-out');
-            }, 800);
+        // --- SECCIÓN DE MÚSICA ---
+        const audioPlayer = document.getElementById('background-music');
+        const musicPrompt = document.getElementById('music-prompt');
+        const playlist = [ 'Sebastian_Yatra_-_Cristina.mp3', 'TINI_-_tinta_90.mp3', 'otra_cancion.mp3' ];
+        let currentSongIndex = 0;
+        function playNextSong() {
+            currentSongIndex = (currentSongIndex + 1) % playlist.length;
+            audioPlayer.src = playlist[currentSongIndex];
+            audioPlayer.play();
         }
-        messageButton.addEventListener('click', handleMainButtonClick);
-
-        const countdownElement = document.getElementById('countdown');
-        const startDate = new Date('2023-01-27T00:00:00'); 
-        function updateTimer() {
-            const now = new Date(); const diff = now - startDate;
-            let seconds = Math.floor(diff / 1000); let minutes = Math.floor(seconds / 60); let hours = Math.floor(minutes / 60); let days = Math.floor(hours / 24);
-            const years = Math.floor(days / 365.25); days = Math.floor(days % 365.25);
-            hours %= 24; minutes %= 60; seconds %= 60;
-            countdownElement.innerHTML = `<strong>${years}</strong> años, <strong>${days}</strong> días, <strong>${hours}</strong>h, <strong>${minutes}</strong>m y <strong>${seconds}</strong>s`;
+        audioPlayer.addEventListener('ended', playNextSong);
+        function startMusic() {
+            if (playlist.length > 0 && playlist[0]) {
+                audioPlayer.src = playlist[currentSongIndex];
+                let playPromise = audioPlayer.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => { musicPrompt.style.display = 'flex'; });
+                }
+            } else {
+                console.error("La lista de reproducción (playlist) está vacía o mal configurada.");
+            }
         }
-        setInterval(updateTimer, 1000);
-        updateTimer();
+        musicPrompt.addEventListener('click', () => {
+            audioPlayer.play();
+            musicPrompt.style.display = 'none';
+        }, { once: true });
+        window.addEventListener('load', startMusic);
     </script>
 </body>
 </html>
