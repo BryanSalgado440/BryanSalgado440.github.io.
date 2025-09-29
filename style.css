@@ -1,0 +1,204 @@
+/* --- Fuentes y estilos goblales --- */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600&display=swap');
+
+body {
+    font-family: 'Quicksand', sans-serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    text-align: center;
+    background: linear-gradient(315deg, #ffdde1, #ee9ca7, #ffdde1, #ee9ca7);
+    background-size: 400% 400%;
+    animation: gradientAnimation 15s ease infinite;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+@keyframes gradientAnimation { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+/* --- Prelodeader (Pantalla de carga) --- */
+#preloader {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: #fce4ec;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.8s ease;
+}
+#preloader.fade-out { opacity: 0; }
+.spinner {
+    width: 60px; height: 60px;
+    border: 6px solid rgba(238, 156, 167, 0.3);
+    border-top-color: #c83b50;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+
+/* --- Animación de Corazones --- */
+.hearts-container {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 0; pointer-events: none;
+}
+.heart-emoji {
+    position: absolute; bottom: -50px;
+    font-size: 30px; 
+    color: #ff80ab; 
+    animation: floatUp 10s infinite linear;
+}
+@keyframes floatUp { to { bottom: 110vh; opacity: 0; transform: rotate(360deg); } }
+
+
+/* --- Contenedor principal --- */
+.container {
+    background: rgba(255, 255, 255, 0.95); padding: 30px 40px; border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); max-width: 650px; width: 100%;
+    position: relative; z-index: 1; box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+h1 { font-family: 'Dancing Script', cursive; color: #c83b50; font-size: 3em; margin: 0 0 10px 0; display: flex; justify-content: center; align-items: center; }
+.heart { 
+    color: #e74c3c; font-size: 0.8em; margin: 0 15px;
+    animation: beat 1.5s infinite ease-in-out; 
+}
+@keyframes beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+
+
+/* --- Contador y mensajes --- */
+#timer-container { padding: 10px; background-color: rgba(255, 221, 225, 0.5); border-radius: 12px; }
+.timer-text { margin: 0 0 5px 0; font-size: 1em; color: #555; font-weight: 600; }
+#countdown { font-size: 1.4em; font-weight: bold; color: #c83b50; }
+#countdown strong { font-weight: 700; }
+
+.message-box { min-height: 110px; display: flex; justify-content: center; align-items: center; position: relative; padding: 0 10px; }
+p#message { font-size: 1.25em; color: #444; font-weight: 600; line-height: 1.6; margin: 0; animation: slideIn 0.8s forwards; }
+@keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-30px); } }
+.slide-out { animation: slideOut 0.8s forwards; }
+
+#copy-message-button {
+    position: absolute;
+    top: 5px; right: 5px;
+    background: none; border: none; font-size: 1.5em; cursor: pointer;
+    opacity: 0; transition: opacity 0.3s;
+}
+.message-box:hover #copy-message-button { opacity: 0.6; }
+#copy-message-button:hover { opacity: 1; }
+#copy-message-button.visible { display: block; }
+
+
+/* --- BOTONES --- */
+.button-group, .music-controls, .volume-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+#message-button {
+    font-family: 'Quicksand', sans-serif; font-weight: 600; background: linear-gradient(45deg, #ff758c, #ff7eb3);
+    color: white; border: none; padding: 16px 30px; font-size: 1em; border-radius: 50px;
+    cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 20px rgba(255, 126, 179, 0.5);
+    order: 2; /* Para reordenar en vista celular */
+}
+#message-button:hover { transform: translateY(-4px) scale(1.05); }
+
+.music-button {
+    font-family: 'Quicksand', sans-serif; font-weight: 600; background: #d1c4e9;
+    color: #4527a0; border: none; padding: 10px 20px; font-size: 0.9em;
+    border-radius: 50px; cursor: pointer; transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    opacity: 0; /* Oculto al inicio para animación */
+    transform: scale(0.8);
+    pointer-events: none; /* No se puede hacer clic mientras está oculto */
+}
+.music-button.visible {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+.music-button:hover { background: #b39ddb; transform: translateY(-2px) scale(1.02); }
+
+#prev-song-button { order: 1; }
+#play-pause-button { order: 2; background-color: #c5cae9; }
+#next-song-button { order: 3; }
+
+
+/* --- Información de Canciones --- */
+#song-info { min-height: 24px; color: #555; font-weight: 600; }
+#song-name { margin: 0; font-style: italic; }
+
+.volume-control { opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
+.volume-control.visible { opacity: 1; pointer-events: auto; }
+#volume-slider { cursor: pointer; }
+
+
+/* --- Zona de fotografias. --- */
+#gallery-button {
+    font-family: 'Quicksand', sans-serif; font-weight: 600; background: #a5d6a7;
+    color: #2e7d32; border: none; padding: 12px 24px; font-size: 0.95em;
+    border-radius: 50px; cursor: pointer; transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); margin-top: 10px;
+}
+#gallery-button:hover { background: #81c784; transform: translateY(-2px); }
+
+.modal {
+    display: none; position: fixed; z-index: 100;
+    left: 0; top: 0; width: 100%; height: 100%;
+    overflow: auto; background-color: rgba(0,0,0,0.85);
+    justify-content: center; align-items: center;
+}
+.modal-content {
+    position: relative; display: flex; align-items: center; justify-content: center;
+    max-width: 90vw; max-height: 90vh;
+}
+#gallery-image {
+    max-width: 100%; max-height: 100%;
+    border-radius: 10px;
+}
+.close-button {
+    position: absolute; top: 15px; right: 35px;
+    color: #f1f1f1; font-size: 40px; font-weight: bold;
+    cursor: pointer; transition: 0.3s;
+}
+.close-button:hover { color: #bbb; }
+
+.prev, .next {
+    cursor: pointer; position: absolute;
+    top: 50%; width: auto; margin-top: -22px; padding: 16px;
+    color: white; font-weight: bold; font-size: 20px;
+    transition: 0.3s; user-select: none;
+    background-color: rgba(0,0,0,0.4);
+}
+.prev { left: 0; border-radius: 0 3px 3px 0; }
+.next { right: 0; border-radius: 3px 0 0 3px; }
+.prev:hover, .next:hover { background-color: rgba(0,0,0,0.8); }
+
+
+/* --- Diseño Adaptable (Respuesta) --- */
+@media (max-width: 768px) {
+    body { padding: 10px; min-height: -webkit-fill-available; }
+    .container { padding: 20px 15px; max-width: 95%; }
+    h1 { font-size: 2.2em; }
+    p#message { font-size: 1.1em; }
+    #countdown { font-size: 1.15em; }
+    #message-button { padding: 14px 25px; font-size: 0.95em; }
+    .music-button { padding: 8px 16px; font-size: 0.85em; }
+}
+
+@media (max-width: 600px) {
+    h1 { font-size: 1.8em; }
+    .music-controls { flex-direction: row; justify-content: space-around; width: 100%; }
+    #message-button { width: 90%; }
+}
