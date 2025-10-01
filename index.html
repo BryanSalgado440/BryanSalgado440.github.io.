@@ -2,80 +2,244 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <!-- Esta es la línea para el diseño adaptable. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Una Sorpresa Para Ti ❤️</title>
-    <!-- Enlace a la hoja de estilos CSS -->
-    <link rel="stylesheet" href="style.css">
-    <!-- Enlace a las fuentes de Google -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <title>¡Trabajando para ti!</title>
+    <style>
+        body {
+            background-color: #fce4ec; 
+            color: #333;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #music-prompt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 100;
+            cursor: pointer;
+            display: none; 
+        }
+
+        #music-prompt h2 {
+            font-size: 2.5em;
+        }
+
+        #music-prompt p {
+            font-size: 1.2em;
+            margin-top: 0;
+        }
+
+        .content-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box; /* Asegura que el padding no cause desbordamiento */
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 30px;
+            border-radius: 15px;
+            background-color: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #d81b60;
+        }
+        p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+        #countdown {
+            font-size: 2em;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap; 
+        }
+        #countdown > div {
+            background-color: #f06292;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        #countdown > div span {
+            display: block;
+            font-size: 0.5em;
+            font-weight: normal;
+        }
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .heart {
+            position: absolute;
+            bottom: -50px;
+            font-size: 20px;
+            color: #ff80ab;
+            animation: floatUp 10s infinite linear;
+        }
+        .heart:nth-child(1) { left: 10%; animation-delay: 0s; font-size: 25px; }
+        .heart:nth-child(2) { left: 20%; animation-delay: 2s; animation-duration: 12s; }
+        .heart:nth-child(3) { left: 30%; animation-delay: 4s; }
+        .heart:nth-child(4) { left: 40%; animation-delay: 1s; animation-duration: 15s; font-size: 18px; }
+        .heart:nth-child(5) { left: 50%; animation-delay: 3s; }
+        .heart:nth-child(6) { left: 60%; animation-delay: 5s; font-size: 28px; }
+        .heart:nth-child(7) { left: 70%; animation-delay: 2s; animation-duration: 8s; }
+        .heart:nth-child(8) { left: 80%; animation-delay: 6s; }
+        .heart:nth-child(9) { left: 90%; animation-delay: 1.5s; font-size: 16px; animation-duration: 13s; }
+        .heart:nth-child(10) { left: 55%; animation-delay: 7s; }
+        @keyframes floatUp {
+            to {
+                bottom: 110vh;
+                opacity: 0;
+                transform: rotate(360deg);
+            }
+        }
+
+        /* --- Medida para adaptar a Celulares y Tablets --- */
+
+        /* Estilos para pantallas de hasta 768px de ancho (tablets y celulares grandes) */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em; /* Reduce el título principal */
+            }
+            p {
+                font-size: 1.1em; /* Reducimos el párrafo */
+            }
+            #countdown {
+                font-size: 1.5em; /* Números del contador */
+                gap: 10px; /* Menos espacio entre los contadores */
+            }
+            .container {
+                padding: 20px; /* Menos espacio interno en el contenedor */
+            }
+        }
+
+        /* Estilos para pantallas de hasta 480px de ancho (Celulares pequeños) */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.6em; /* Título aún más pequeño */
+            }
+            p {
+                font-size: 1em; /* Párrafo más pequeño */
+            }
+            #countdown > div {
+                padding: 8px 10px; /* Caja del contador más pequeñas */
+            }
+            #countdown {
+                font-size: 1.3em;
+            }
+            .content-wrapper {
+                padding: 10px; /* Reducimos el padding general de la página */
+            }
+        }
+        
+    </style>
 </head>
 <body>
 
-    <!-- Preloader: Pantalla de carga inicial -->
-    <div id="preloader">
-        <div class="spinner"></div>
-    </div>
 
-    <!-- Contenedor para la animación de corazones (se generan con JavaScript) -->
-    <div class="hearts-container"></div>
-
-    <div class="container">
-        <h1><span class="heart">❤</span> Para la mujer más hermosa del mundo <span class="heart">❤</span></h1>
-        
-        <div id="timer-container">
-            <p class="timer-text">Soy el hombre más afortunado desde hace...</p>
-            <div id="countdown">Calculando...</div>
-        </div>
-
-        <div class="message-box">
-            <p id="message">Toca el botón para empezar esta pequeña sorpresa que te preparé con todo mi cariño Nicol.</p>
-            <!-- CAMBIO: El botón de copiar ya no está aquí dentro. -->
-        </div>
-        
-        <!-- CAMBIO: El botón de copiar se ha movido aquí, justo debajo del cuadro de mensaje. -->
-        <button id="copy-message-button" title="Copiar mensaje" aria-label="Copiar mensaje">📋</button>
-        
-        <!-- Contenedor para información de la canción -->
-        <div id="song-info">
-            <p id="song-name"></p>
-        </div>
-
-        <div class="button-group">
-            <button id="message-button">Siguiente Mensaje Mágico ✨</button>
-        </div>
-
-        <!-- Controles de música -->
-        <div class="music-controls">
-             <button id="prev-song-button" class="music-button" aria-label="Canción anterior">🎵 Anterior</button>
-             <button id="play-pause-button" class="music-button" aria-label="Reproducir o pausar">▶️ Play</button>
-             <button id="next-song-button" class="music-button" aria-label="Siguiente canción">Siguiente 🎵</button>
-        </div>
-        <div class="volume-control">
-            <span aria-hidden="true">🔊</span>
-            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.8" aria-label="Control de volumen">
-        </div>
-
-        <!-- Botón para abrir la galería -->
-        <button id="gallery-button">Ver Nuestros Momentos 📸</button>
-
-    </div>
-    
-    <!-- Elemento de audio (oculto) -->
-    <audio id="background-music"></audio>
-
-    <!-- Modal de la Galería (inicialmente oculto) -->
-    <div id="gallery-modal" class="modal">
-        <span class="close-button" aria-label="Cerrar galería">&times;</span>
-        <div class="modal-content">
-            <a class="prev" aria-label="Imagen anterior">&#10094;</a>
-            <img id="gallery-image" src="" alt="Nuestro Recuerdo">
-            <a class="next" aria-label="Siguiente imagen">&#10095;</a>
+    <div id="music-prompt">
+        <div>
+            <h2>¡Bienvenida! ❤️</h2>
+            <p>(Haz clic aquí para activar la música)</p>
         </div>
     </div>
 
-    <!-- Enlace al archivo JavaScript -->
-    <script src="script.js"></script>
+    <div class="hearts-container">
+        <div class="heart">❤️</div><div class="heart">❤️</div><div class="heart">❤️</div><div class="heart">❤️</div><div class="heart">❤️</div><div class="heart">❤️</div><div class="heart">❤️</div><div class="heart">❤️</div><div class="heart">❤️</div><div class="heart">❤️</div>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="container">
+            <h1>Hola, hermosa, me has pillado trabajando en su página web, ya se la devolveré pronto. Solo estoy agregándole algunas cositas para usted. Espero que le guste, te quiere mucho, Bryan ❤</h1>
+            <p>Estará lista muy pronto. Mientras tanto, aquí tienes la cuenta regresiva:</p>
+            <div id="countdown">
+                <div id="dias">00<span>Días</span></div>
+                <div id="horas">00<span>Horas</span></div>
+                <div id="minutos">00<span>Minutos</span></div>
+                <div id="segundos">00<span>Segundos</span></div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="background-music">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <script>
+        // ---( Sección De Cuenta Regresiva )---
+        const fechaLanzamiento = new Date("Oct 01, 2025 23:30:00").getTime();
+        const x = setInterval(function() {
+            const ahora = new Date().getTime();
+            const distancia = fechaLanzamiento - ahora;
+            const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
+            document.getElementById("dias").innerHTML = (dias < 10 ? '0' : '') + dias + "<span>Días</span>";
+            document.getElementById("horas").innerHTML = (horas < 10 ? '0' : '') + horas + "<span>Horas</span>";
+            document.getElementById("minutos").innerHTML = (minutos < 10 ? '0' : '') + minutos + "<span>Minutos</span>";
+            document.getElementById("segundos").innerHTML = (segundos < 10 ? '0' : '') + segundos + "<span>Segundos</span>";
+            if (distancia < 0) {
+                clearInterval(x);
+                document.getElementById("countdown").innerHTML = "¡TU PÁGINA YA ESTÁ LISTA!";
+            }
+        }, 1000);
+
+        // ---( Sección De Música )---
+        const audioPlayer = document.getElementById('background-music');
+        const musicPrompt = document.getElementById('music-prompt');
+        const playlist = [ 'Sebastian_Yatra_-_Cristina.mp3', 'TINI_-_tinta_90.mp3', 'otra_cancion.mp3' ];
+        let currentSongIndex = 0;
+        function playNextSong() {
+            currentSongIndex = (currentSongIndex + 1) % playlist.length;
+            audioPlayer.src = playlist[currentSongIndex];
+            audioPlayer.play();
+        }
+        audioPlayer.addEventListener('ended', playNextSong);
+        function startMusic() {
+            if (playlist.length > 0 && playlist[0]) {
+                audioPlayer.src = playlist[currentSongIndex];
+                let playPromise = audioPlayer.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => { musicPrompt.style.display = 'flex'; });
+                }
+            } else {
+                console.error("La lista de reproducción (playlist) está vacía o mal configurada.");
+            }
+        }
+        musicPrompt.addEventListener('click', () => {
+            audioPlayer.play();
+            musicPrompt.style.display = 'none';
+        }, { once: true });
+        window.addEventListener('load', startMusic);
+    </script>
 </body>
 </html>
