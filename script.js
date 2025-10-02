@@ -185,7 +185,7 @@ let currentPageIndex = 0;
 let isPageTurning = false;
 
 // CORRECCIÓN: Si tienes más de una canción, déjalas aquí. Si solo tienes una, puedes dejar solo esa.
-const letterSongFiles = ['audio/canciones-carta/A_Thousand_Years.mp3']; //, 'audio/canciones-carta/Married_Life.mp3', etc.
+const letterSongFiles = ['canciones-carta/A_Thousand_Years.mp3']; //, 'canciones-carta/Married_Life.mp3', etc.
 let currentLetterSongIndex = 0; // Se mantiene por si en el futuro añades más.
 
 function updateLetterNav(index) {
@@ -251,4 +251,5 @@ function closeLetter() {
     }
 }
 closeLetterButton.addEventListener('click', closeLetter);
+
 letterModal.addEventListener('click', (e) => { if (e.target === letterModal) closeLetter(); });
