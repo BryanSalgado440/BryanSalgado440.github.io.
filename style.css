@@ -21,19 +21,6 @@ body {
 .heart-emoji { position: absolute; bottom: -50px; font-size: 30px; color: #ff80ab; animation: floatUp 10s infinite linear; }
 @keyframes floatUp { to { bottom: 110vh; opacity: 0; transform: rotate(360deg); } }
 
-/* --- NUEVO: Estilo para corazones al hacer clic --- */
-.click-heart {
-    position: absolute;
-    pointer-events: none;
-    z-index: 9999;
-    font-size: 24px;
-    animation: burstHeart 0.8s ease-out forwards;
-}
-@keyframes burstHeart {
-    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
-    100% { transform: translate(var(--x-move), var(--y-move)) scale(1.5) rotate(var(--rotation)); opacity: 0; }
-}
-
 .container { background: rgba(255, 255, 255, 0.95); padding: 30px 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); max-width: 650px; width: 100%; position: relative; z-index: 1; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px; margin: 20px 0; }
 h1 { font-family: 'Dancing Script', cursive; color: #c83b50; font-size: 3em; margin: 0 0 10px 0; display: flex; justify-content: center; align-items: center; }
 .heart { color: #e74c3c; font-size: 0.8em; margin: 0 15px; animation: beat 1.5s infinite ease-in-out; }
@@ -50,6 +37,10 @@ p#message { font-size: 1.25em; color: #444; font-weight: 600; line-height: 1.6; 
 @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-30px); } }
 .slide-out { animation: slideOut 0.8s forwards; }
+
+#copy-message-button { background: #f0f0f0; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.3em; cursor: pointer; margin: -10px auto 5px auto; display: flex; justify-content: center; align-items: center; opacity: 0; transform: scale(0.8); pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+#copy-message-button.visible { opacity: 0.7; transform: scale(1); pointer-events: auto; }
+#copy-message-button:hover { opacity: 1; transform: scale(1.1); background: #e0e0e0; }
 
 .button-group, .music-controls, .volume-control { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 15px; }
 #message-button { font-family: 'Quicksand', sans-serif; font-weight: 600; background: linear-gradient(45deg, #ff758c, #ff7eb3); color: white; border: none; padding: 16px 30px; font-size: 1em; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 20px rgba(255, 126, 179, 0.5); order: 2; }
@@ -92,7 +83,7 @@ p#message { font-size: 1.25em; color: #444; font-weight: 600; line-height: 1.6; 
 .close-letter-button:hover { color: #5d4037; }
 .letter-content h2 { font-family: 'Dancing Script', cursive; color: #c83b50; font-size: 2.8em; margin: 0 auto 20px auto; text-align: center; border-bottom: 2px solid rgba(200, 59, 80, 0.3); padding-bottom: 10px; }
 
-#letter-text { flex-grow: 1; overflow-y: auto; padding-right: 20px; scrollbar-width: thin; scrollbar-color: #d7ccc8 #faf3e0; scroll-behavior: smooth; }
+#letter-text { flex-grow: 1; overflow-y: auto; padding-right: 20px; scrollbar-width: thin; scrollbar-color: #d7ccc8 #faf3e0; }
 #letter-text p { font-size: 1.4em; line-height: 1.7; margin: 0 0 20px 0; }
 
 .letter-page { display: none; }
