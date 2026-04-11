@@ -21,17 +21,8 @@ body {
 .heart-emoji { position: absolute; bottom: -50px; font-size: 30px; color: #ff80ab; animation: floatUp 10s infinite linear; }
 @keyframes floatUp { to { bottom: 110vh; opacity: 0; transform: rotate(360deg); } }
 
-.click-heart {
-    position: absolute;
-    pointer-events: none;
-    z-index: 9999;
-    font-size: 24px;
-    animation: burstHeart 0.8s ease-out forwards;
-}
-@keyframes burstHeart {
-    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
-    100% { transform: translate(var(--x-move), var(--y-move)) scale(1.5) rotate(var(--rotation)); opacity: 0; }
-}
+.click-heart { position: absolute; pointer-events: none; z-index: 9999; font-size: 24px; animation: burstHeart 0.8s ease-out forwards; }
+@keyframes burstHeart { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; } 100% { transform: translate(var(--x-move), var(--y-move)) scale(1.5) rotate(var(--rotation)); opacity: 0; } }
 
 .container { background: rgba(255, 255, 255, 0.95); padding: 30px 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); max-width: 650px; width: 100%; position: relative; z-index: 1; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px; margin: 20px 0; }
 h1 { font-family: 'Dancing Script', cursive; color: #c83b50; font-size: 3em; margin: 0 0 10px 0; display: flex; justify-content: center; align-items: center; }
@@ -68,14 +59,11 @@ p#message { font-size: 1.25em; color: #444; font-weight: 600; line-height: 1.6; 
 #gallery-button:hover { background: #81c784; transform: translateY(-2px); }
 #letter-button { background: #fde2a3; color: #5d4037; }
 #letter-button:hover { background: #fdd870; transform: translateY(-2px); }
-
-/* Estilo Botón Aniversario */
 #anniversary-button { background: #e1bee7; color: #7b1fa2; }
 #anniversary-button:hover { background: #d1c4e9; transform: translateY(-2px); }
 
 .modal { display: flex; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; background-color: rgba(0,0,0,0.92); justify-content: center; align-items: center; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.4s ease-in-out; }
 .modal.visible { opacity: 1; visibility: visible; pointer-events: auto; }
-
 .modal-content { position: relative; display: flex; align-items: center; justify-content: center; width: 95vw; height: 85vh; transform: scale(0.95) translateY(20px); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 .modal.visible .modal-content { transform: scale(1) translateY(0); }
 
@@ -93,38 +81,19 @@ p#message { font-size: 1.25em; color: #444; font-weight: 600; line-height: 1.6; 
 .close-letter-button:hover { color: #5d4037; }
 .letter-content h2 { font-family: 'Dancing Script', cursive; color: #c83b50; font-size: 2.8em; margin: 0 auto 20px auto; text-align: center; border-bottom: 2px solid rgba(200, 59, 80, 0.3); padding-bottom: 10px; }
 
-.letter-text-box, #letter-text { flex-grow: 1; overflow-y: auto; padding-right: 20px; scrollbar-width: thin; scrollbar-color: #d7ccc8 #faf3e0; scroll-behavior: smooth; }
-.letter-text-box p, #letter-text p { 
-    display: inline; 
-    font-size: 1.4em; 
-    line-height: 2.4; 
-    text-decoration: underline;
-    text-decoration-color: rgba(141, 110, 99, 0.3);
-    text-underline-offset: 12px;
-    text-decoration-thickness: 1.5px;
-}
-.letter-text-box p::after, #letter-text p::after { content: '\A\A'; white-space: pre; display: block; height: 0; }
+.letter-text-box, #letter-text, #anniversary-text { flex-grow: 1; overflow-y: auto; padding-right: 20px; scrollbar-width: thin; scrollbar-color: #d7ccc8 #faf3e0; scroll-behavior: smooth; }
+.letter-text-box p, #letter-text p, #anniversary-text p { display: inline; font-size: 1.4em; line-height: 2.4; text-decoration: underline; text-decoration-color: rgba(141, 110, 99, 0.3); text-underline-offset: 12px; text-decoration-thickness: 1.5px; }
+.letter-text-box p::after, #letter-text p::after, #anniversary-text p::after { content: '\A\A'; white-space: pre; display: block; height: 0; }
 
 .letter-page, .anniversary-page { display: none; }
 .letter-page.active, .anniversary-page.active { display: block; }
 
-.typing-cursor {
-    display: inline-block;
-    width: 2.5px;
-    height: 1.3em;
-    background-color: #c83b50;
-    margin-left: 3px;
-    vertical-align: middle;
-    animation: blink-cursor 0.8s infinite;
-}
+/* Navegación interna */
+.letter-controls { display: flex; justify-content: space-between; margin-top: 15px; border-top: 1px solid rgba(141, 110, 99, 0.2); padding-top: 10px; }
+.nav-btn { font-family: 'Quicksand', sans-serif; background: #ee9ca7; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600; transition: 0.3s; }
+.nav-btn:hover { background: #ff7eb3; transform: scale(1.05); }
+
+.typing-cursor { display: inline-block; width: 2.5px; height: 1.3em; background-color: #c83b50; margin-left: 3px; vertical-align: middle; animation: blink-cursor 0.8s infinite; }
 @keyframes blink-cursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-.navegacion-desactivada { display: none; }
-
-@media (max-width: 768px) {
-    body { padding: 10px; align-items: flex-start; }
-    .container { padding: 25px 20px; max-width: 95%; gap: 10px; }
-    h1 { font-size: 1.8em; }
-    .countdown-display { font-size: 0.9em; }
-    .letter-content { padding: 30px 20px; width: 92vw; }
-}
+@media (max-width: 768px) { body { padding: 10px; align-items: flex-start; } .container { padding: 25px 20px; max-width: 95%; gap: 10px; } h1 { font-size: 1.8em; } .countdown-display { font-size: 0.9em; } .letter-content { padding: 30px 20px; width: 92vw; } }
