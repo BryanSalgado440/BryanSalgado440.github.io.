@@ -139,6 +139,12 @@ const letterAudio = document.getElementById('letter-music');
 let mainMusicPlaying = false;
 let typingInterval;
 
+// GESTIÓN DE PLAYLIST DE ANIVERSARIO
+const anniversaryPlaylist = ['Música_aniversario/A_Dónde_Vamos.mp3', 'Música_aniversario/Magia.mp3'];
+let currentAnniversaryIdx = 0;
+let isAnniversaryActive = false;
+let currentPageIdx = 0;
+
 function typeWriter(element, htmlContent, container) {
     element.innerHTML = "";
     let i = 0;
@@ -155,48 +161,100 @@ function typeWriter(element, htmlContent, container) {
     }, 45); 
 }
 
-function openLetter(modalId, textId, pageClass, musicFile) {
+// Para la "Carta Para Ti" (Navegación entre textos originales)
+function updateLetterPage() {
+    const pages = document.querySelectorAll('#letter-modal .letter-page');
+    const title = document.getElementById('modal-title');
+    const prevBtn = document.getElementById('prev-page');
+    const nextBtn = document.getElementById('next-page');
+    const container = document.getElementById('letter-text');
+
+    pages.forEach((p, idx) => p.classList.toggle('active', idx === currentPageIdx));
+    title.innerText = (currentPageIdx === 0) ? "Unas Palabras Solo Para Ti..." : "Nuestro Camino Juntos ❤️";
+    prevBtn.style.display = (currentPageIdx === 0) ? 'none' : 'inline-block';
+    nextBtn.style.display = (currentPageIdx === 0) ? 'inline-block' : 'none';
+
+    const activePage = pages[currentPageIdx];
+    const originalHTML = activePage.getAttribute('data-original') || activePage.innerHTML;
+    if (!activePage.getAttribute('data-original')) activePage.setAttribute('data-original', originalHTML);
+    
+    typeWriter(activePage, originalHTML, container);
+}
+
+// Botón: Abrir Carta Para Ti
+document.getElementById('letter-button').addEventListener('click', () => {
     if (!audio.paused) { mainMusicPlaying = true; audio.pause(); }
-    const modal = document.getElementById(modalId);
-    const page = modal.querySelector('.' + pageClass);
-    const container = document.getElementById(textId);
+    currentPageIdx = 0;
+    isAnniversaryActive = false;
+    document.getElementById('letter-modal').classList.add('visible');
+    letterAudio.src = 'canciones-carta/A_Thousand_Years.mp3';
+    letterAudio.loop = true;
+    letterAudio.play().catch(e => console.log(e));
+    updateLetterPage();
+});
+
+// Botón: Abrir Carta Aniversario
+document.getElementById('anniversary-button').addEventListener('click', () => {
+    if (!audio.paused) { mainMusicPlaying = true; audio.pause(); }
+    isAnniversaryActive = true;
+    currentAnniversaryIdx = 0;
+    const modal = document.getElementById('anniversary-modal');
+    const container = document.getElementById('anniversary-text');
+    const page = modal.querySelector('.anniversary-page');
     
     modal.classList.add('visible');
-    const originalHTML = page.innerHTML;
-    page.innerHTML = "";
-    
-    letterAudio.src = musicFile;
+    letterAudio.src = anniversaryPlaylist[0];
+    letterAudio.loop = false;
     letterAudio.play().catch(e => console.log(e));
     
+    const originalHTML = page.getAttribute('data-original') || page.innerHTML;
+    if (!page.getAttribute('data-original')) page.setAttribute('data-original', originalHTML);
     setTimeout(() => typeWriter(page, originalHTML, container), 600);
-}
+});
+
+// Navegación dentro de "Carta Para Ti"
+document.getElementById('next-page').addEventListener('click', () => { currentPageIdx = 1; updateLetterPage(); });
+document.getElementById('prev-page').addEventListener('click', () => { currentPageIdx = 0; updateLetterPage(); });
 
 function closeAllLetters() {
     clearInterval(typingInterval);
-    document.querySelectorAll('.modal').forEach(m => m.classList.remove('visible'));
+    document.querySelectorAll('.modal').forEach(m => {
+        if(m.id !== 'gallery-modal') m.classList.remove('visible');
+    });
     letterAudio.pause();
+    isAnniversaryActive = false;
     if (mainMusicPlaying) audio.play();
 }
 
-document.getElementById('letter-button').addEventListener('click', () => 
-    openLetter('letter-modal', 'letter-text', 'letter-page', 'canciones-carta/A_Thousand_Years.mp3')
-);
-
-document.getElementById('anniversary-button').addEventListener('click', () => 
-    openLetter('anniversary-modal', 'anniversary-text', 'anniversary-page', 'audio/Sebastian_Yatra_-_Cristina.mp3')
-);
-
 document.querySelectorAll('.close-letter-button').forEach(btn => btn.addEventListener('click', closeAllLetters));
+
+letterAudio.addEventListener('ended', () => {
+    if (isAnniversaryActive) {
+        currentAnniversaryIdx = (currentAnniversaryIdx + 1) % anniversaryPlaylist.length;
+        letterAudio.src = anniversaryPlaylist[currentAnniversaryIdx];
+        letterAudio.play();
+    }
+});
 
 // --- EFECTO CLIC ---
 document.addEventListener('mousedown', (e) => {
     if (e.target.tagName === 'BUTTON') {
-        for (let i = 0; i < 6; i++) {
+        const heartEmojis = ['❤️', '💖', '✨', '🥰', '💕', '💗', '🌸'];
+        const amount = 18; 
+        for (let i = 0; i < amount; i++) {
             const h = document.createElement('div');
-            h.className = 'click-heart'; h.innerText = '❤️';
-            h.style.left = e.pageX + 'px'; h.style.top = e.pageY + 'px';
-            h.style.setProperty('--x-move', `${(Math.random() - 0.5) * 200}px`);
-            h.style.setProperty('--y-move', `${(Math.random() - 1) * 200}px`);
+            h.className = 'click-heart';
+            h.innerText = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+            h.style.left = e.pageX + 'px';
+            h.style.top = e.pageY + 'px';
+            const xMove = (Math.random() - 0.5) * 350; 
+            const yMove = (Math.random() - 0.7) * 350; 
+            const rotation = Math.random() * 360;
+            const size = Math.random() * 15 + 15;
+            h.style.setProperty('--x-move', `${xMove}px`);
+            h.style.setProperty('--y-move', `${yMove}px`);
+            h.style.setProperty('--rotation', `${rotation}deg`);
+            h.style.fontSize = `${size}px`;
             document.body.appendChild(h);
             setTimeout(() => h.remove(), 800);
         }
