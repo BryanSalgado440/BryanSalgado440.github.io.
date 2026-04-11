@@ -18,7 +18,7 @@ function generateHearts() {
         heart.style.left = `${Math.random() * 100}%`;
         heart.style.animationDuration = `${Math.random() * 8 + 7}s`;
         heart.style.animationDelay = `${Math.random() * 10}s`;
-        heart.style.fontSize = `${Math.random() * 20 + 20}s`;
+        heart.style.fontSize = `${Math.random() * 20 + 20}px`;
         heartsContainer.appendChild(heart);
     }
 }
@@ -54,7 +54,6 @@ audio.onpause = () => playPauseButton.innerText = "▶️ Play";
 // --- LÓGICA DE MENSAJES ---
 const messageElement = document.getElementById('message');
 const messageButton = document.getElementById('message-button');
-const copyMessageButton = document.getElementById('copy-message-button');
 let currentMessageIndex = -1;
 let isFirstClick = true;
 let messageTimer = null;
@@ -86,17 +85,10 @@ function handleMainButtonClick() {
     if (isFirstClick) {
         messageButton.innerHTML = "Siguiente mensaje 💕";
         isFirstClick = false;
-        copyMessageButton.classList.add('visible');
     }
     showNextMessageAndSchedule();
 }
 messageButton.addEventListener('click', handleMainButtonClick);
-copyMessageButton.addEventListener('click', () => {
-    navigator.clipboard.writeText(messageElement.innerText).then(() => {
-        copyMessageButton.innerText = '✅';
-        setTimeout(() => { copyMessageButton.innerText = '📋'; }, 1500);
-    });
-});
 
 // --- LÓGICA DEL CONTADOR DE TIEMPO ---
 const countdownElement = document.getElementById('countdown');
@@ -184,46 +176,78 @@ const letterNavigation = document.querySelector('.letter-navigation');
 let currentPageIndex = 0;
 let isPageTurning = false;
 
-// CORRECCIÓN: Si tienes más de una canción, déjalas aquí. Si solo tienes una, puedes dejar solo esa.
-const letterSongFiles = ['canciones-carta/A_Thousand_Years.mp3']; //, 'canciones-carta/Married_Life.mp3', etc.
-let currentLetterSongIndex = 0; // Se mantiene por si en el futuro añades más.
+// --- MÁQUINA DE ESCRIBIR CON AUTO-SCROLL ---
+const originalLetterTexts = Array.from(letterPages).map(page => page.innerHTML);
+let typingInterval;
+
+function typeWriterEffect(index) {
+    const element = letterPages[index];
+    const letterTextContainer = document.getElementById('letter-text');
+    const htmlContent = originalLetterTexts[index];
+    element.innerHTML = "";
+    let i = 0;
+    
+    clearInterval(typingInterval);
+    
+    typingInterval = setInterval(() => {
+        if (i < htmlContent.length) {
+            if (htmlContent.charAt(i) === "<") {
+                i = htmlContent.indexOf(">", i) + 1;
+            } else {
+                i++;
+            }
+            element.innerHTML = htmlContent.slice(0, i);
+            letterTextContainer.scrollTop = letterTextContainer.scrollHeight;
+        } else {
+            clearInterval(typingInterval);
+        }
+    }, 25);
+}
+
+const letterSongFiles = ['canciones-carta/A_Thousand_Years.mp3'];
+let currentLetterSongIndex = 0;
 
 function updateLetterNav(index) {
     pageCounter.textContent = `Página ${index + 1} de ${letterPages.length}`;
     prevPageButton.disabled = (index === 0);
     nextPageButton.disabled = (index === letterPages.length - 1);
 }
+
 function changeLetterPage(newIndex) {
     if (isPageTurning || newIndex === currentPageIndex) return;
     isPageTurning = true;
     const currentPage = letterPages[currentPageIndex];
     const nextPage = letterPages[newIndex];
+    
+    clearInterval(typingInterval);
     currentPage.classList.add('fade-out');
+    
     setTimeout(() => {
         currentPage.classList.remove('active', 'fade-out');
         nextPage.classList.add('active', 'fade-in');
+        
+        typeWriterEffect(newIndex);
+        
         setTimeout(() => {
             nextPage.classList.remove('fade-in');
             isPageTurning = false;
         }, 400);
     }, 400);
+    
     currentPageIndex = newIndex;
     updateLetterNav(currentPageIndex);
 }
+
 if (letterNavigation && !letterNavigation.classList.contains('navegacion-desactivada')) {
     prevPageButton.addEventListener('click', () => { if (currentPageIndex > 0) changeLetterPage(currentPageIndex - 1); });
     nextPageButton.addEventListener('click', () => { if (currentPageIndex < letterPages.length - 1) changeLetterPage(currentPageIndex + 1); });
 }
 
-// CORRECCIÓN: Esta función ahora solo carga la canción. El loop lo hace el HTML.
 function loadLetterSong(songIndex) { 
     letterAudio.src = letterSongFiles[songIndex]; 
     letterAudio.volume = audio.volume; 
     letterAudio.play().catch(error => console.log(error)); 
 }
-
-// CORRECCIÓN: Se eliminan las funciones 'nextLetterSong' y el 'event listener' de 'ended'
-// ya que el atributo 'loop' en el HTML se encarga de repetir la canción.
 
 letterButton.addEventListener('click', () => {
     if (!audio.paused) {
@@ -232,17 +256,28 @@ letterButton.addEventListener('click', () => {
     } else {
         mainMusicWasPlaying = false;
     }
+    
     letterModal.classList.add('visible');
+    
     letterPages.forEach((page, index) => {
         page.classList.toggle('active', index === 0);
+        page.innerHTML = ""; 
     });
+    
     currentPageIndex = 0;
     if (letterNavigation && !letterNavigation.classList.contains('navegacion-desactivada')) {
         updateLetterNav(0);
     }
+    
     loadLetterSong(currentLetterSongIndex);
+    
+    setTimeout(() => {
+        typeWriterEffect(0);
+    }, 600);
 });
+
 function closeLetter() {
+    clearInterval(typingInterval);
     letterModal.classList.remove('visible');
     letterAudio.pause();
     letterAudio.currentTime = 0;
@@ -250,6 +285,33 @@ function closeLetter() {
         audio.play();
     }
 }
-closeLetterButton.addEventListener('click', closeLetter);
 
+closeLetterButton.addEventListener('click', closeLetter);
 letterModal.addEventListener('click', (e) => { if (e.target === letterModal) closeLetter(); });
+
+// =======================================================
+// --- NUEVO: EFECTO DE CORAZONES AL HACER CLIC ---
+// =======================================================
+document.addEventListener('mousedown', (e) => {
+    // Solo si el clic es sobre un botón o elemento interactivo
+    if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
+        const x = e.pageX;
+        const y = e.pageY;
+        
+        for (let i = 0; i < 6; i++) {
+            const heart = document.createElement('div');
+            heart.className = 'click-heart';
+            heart.innerText = ['❤️', '💖', '💕', '✨'][Math.floor(Math.random() * 4)];
+            heart.style.left = `${x}px`;
+            heart.style.top = `${y}px`;
+            
+            // Valores aleatorios para la explosión
+            heart.style.setProperty('--x-move', `${(Math.random() - 0.5) * 200}px`);
+            heart.style.setProperty('--y-move', `${(Math.random() - 1) * 200}px`);
+            heart.style.setProperty('--rotation', `${(Math.random() - 0.5) * 360}deg`);
+            
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 800);
+        }
+    }
+});
