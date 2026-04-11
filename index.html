@@ -14,7 +14,6 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-BEPKEJMM1D');
 </script>
 </head>
@@ -26,9 +25,14 @@
     <div class="container">
         <h1><span class="heart">❤</span> Para la mujer más hermosa del mundo <span class="heart">❤</span></h1>
         
-        <div id="timer-container">
+        <div class="timer-wrapper">
             <p class="timer-text">Soy el hombre más afortunado desde hace...</p>
-            <div id="countdown">Calculando...</div>
+            <div id="countdown" class="countdown-display">Calculando...</div>
+        </div>
+
+        <div class="timer-wrapper">
+            <p class="timer-text">Somos una hermosa pareja hace...</p>
+            <div id="countdown-pareja" class="countdown-display">Calculando...</div>
         </div>
 
         <div class="message-box">
@@ -52,8 +56,9 @@
         </div>
 
         <div class="extra-buttons">
-            <button id="gallery-button" class="galeria-desactivada">Ver Nuestros Momentos 📸</button>
+            <button id="gallery-button">Ver Nuestros Momentos 📸</button>
             <button id="letter-button">💌 Abrir una Carta para Ti</button>
+            <button id="anniversary-button">💍 Carta de Aniversario ✨</button>
         </div>
     </div>
     
@@ -74,7 +79,6 @@
         <div class="letter-content">
             <span class="close-letter-button">&times;</span>
             <h2>Unas Palabras Solo Para Ti...</h2>
-            
             <div id="letter-text">
                 <div class="letter-page active">
                     <p>Mi querida Nicol,</p>
@@ -87,20 +91,31 @@
                     <p>Con todo mi amor, siempre,</p>
                     <p><strong>Bryan</strong></p>
                 </div>
-                <div class="letter-page"><p>Prueba de lectura.</p></div>
-                <div class="letter-page"><p>Segunda prueba de lectura.</p></div>
             </div>
-            
-            <div class="letter-navigation navegacion-desactivada">
-                <button id="prev-page-button">&larr; Anterior</button>
-                <span id="page-counter"></span>
-                <button id="next-page-button">Siguiente &rarr;</button>
+        </div>
+    </div>
+
+    <div id="anniversary-modal" class="modal">
+        <div class="letter-content">
+            <span class="close-anniversary-button close-letter-button">&times;</span>
+            <h2>Feliz Aniversario, Mi Amor 💍</h2>
+            <div id="anniversary-text" class="letter-text-box">
+                <div class="anniversary-page active">
+                    <p>Hola mi amor.</p>
+                    <p>Hoy cumplimos exactamente un mes desde que nuestras vidas cambiaron. Hace un mes, nos aceptamos como pareja y nos declaramos nuestros sentimientos. Desde ese día mi vida cambió completamente. A pesar de que ya eras parte de mi vida, ahora te tengo por fin como te quería. Mi pareja, mi novia, la mujer que tanto quiero y deseaba en la vida.</p>
+                    <p>Eres la mujer que derribó mis barreras para no tener a nadie a mi lado, ya que en mi vida hubo desilusiones que me volvieron frío y buscaba la manera de alejar a las personas de mí, ya que desconfiaba mucho de ellas. Pero usted, en el instante en que nuestros caminos se cruzaron y nos vimos en persona por primera vez en la playa, no sé cómo, pero desde ese instante nunca desconfíe de usted, con el paso del tiempo te fuiste volviendo alguien importante para mí sin buscar nada por parte de ambos.</p>
+                    <p>Ya cuando pasaron los meses, usted derribó mis barreras y estuvo curando mi corazón sin yo saberlo o darme cuenta. Al punto de tomar una decisión importante en mi vida, seguir mi vida sin usted o quedarme contigo sin saber si algún día te podría decir "mi novia". Tome una buena decisión de quedarme contigo, a pesar de ya tener mi vida planeada. Que seguramente ahora digo, quizá no hubiera estado vivo o viviría muy infeliz, ya que no estarías en ella. Me alegra muchísimo que en base a nuestras historias, ambos supimos encajar en la vida del otro sin mayor esfuerzo, de forma natural y con el tiempo acompañándonos.</p>
+                    <p>Nuestra historia lleva 3 años de duración y sigue sumando días pero de una forma muy diferente. Ya que desde el 11 de febrero de este año 2026, exactamente a las 18:00 hrs en esa plaza en Copiapó. Juntos nos decidimos a formalizar una relación seria y te juro que ese día en esa plaza fue el mejor día de mi vida 🥰. Desde ese día no he parado de sonreír cada vez que me llega tu recuerdo a mi cabeza 🤭. Valió completamente la espera y siento que esa espera nos ayudó mucho para decidirnos el uno por el otro. Ya que se que usted no iba a dejar que alguien que no valiera la pena, tocara su corazón. Y que yo pudiera hacerlo, me hace sentir muy afortunado y honrado de tenerla como mi pareja 🥹.</p>
+                    <p>Mi hermosa mujer. La mujer que siempre deseé y soñé que algún día llegaría... 🥺. A pesar que estemos a miles de kilómetros siempre te siento cerca y eso es algo que casi ninguna relación siente o tiene. La distancia es una condición que siempre nos acompaño y a pesar que esa es una condición que separa muchas parejas a nosotros por el contrario nos hace sentir más ganas de estar juntos. Yo no quiero conocer a ninguna mujer más en mi vida. Contigo quiero pasar el resto de nuestras vidas. Tendremos momentos muy felices y otros tristes, pero juntos iremos superando cada momento. Nos apoyaremos mutuamente y te prometo, Nicol, que siempre seremos felices.</p>
+                    <p>Te elijo a ti cada día, eres mi último pensamiento al dormirme y el primero al despertar y sinceramente aún me siento en un sueño, ya que no creo que en realidad seas mi novia. Y me hace feliz, ver su fotografía y quedarme pegado admirando su belleza y pensando. "Tengo a la mujer más hermosa del mundo 😍". En nuestro aniversario te quiero desear un buen día. Y que me disculpes lo poco de mis palabras 🥺. Ya llegará el día en que lo celebremos juntitos, mi amor. Gracias por quedarte conmigo, por ser mi novia y hacerme sentir el hombre más feliz del mundo.</p>
+                    <p>Te quiero muchísimo, Nicol. Eres la mujer de mis sueños y siempre haré que sientas eso. Te sientas querida y en tu lugar seguro, donde puedas contarme todo sin que alguien te juzgue y, por el contrario, te apoye en todo momento y te diga las cosas claras si lo necesitas. Cómo usted lo hace conmigo. Nicol, feliz aniversario. Nuestro primer mes juntos y quiero celebrar muchos más a tu lado. Te quiero mucho, mucho, mucho, Nicol. Mi hermosa mujer 😍. Que me hace sentir muy orgulloso con sus logros y por lo que hace para triunfar en la vida. Te adoro. Mi hermosa princesa. Feliz aniversario. Un mes juntitos, mi amor ❤️🥰😍💖</p>
+                    <p><strong>Bryan y Nicol 11/03/2026</strong></p>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="floating-message" class="floating-message"></div>
-
     <script src="script.js"></script>
 </body>
 </html>
