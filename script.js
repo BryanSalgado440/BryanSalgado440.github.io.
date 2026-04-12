@@ -158,7 +158,7 @@ function typeWriter(element, htmlContent, container) {
             element.innerHTML = htmlContent;
             clearInterval(typingInterval);
         }
-    }, 70); 
+    }, 60); 
 }
 
 // Para la "Carta Para Ti" (Navegación entre textos originales)
