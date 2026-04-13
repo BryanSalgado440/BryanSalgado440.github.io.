@@ -80,7 +80,7 @@ messageButton.addEventListener('click', () => {
 
 // --- CONTADORES PRECISOS ---
 const startDateLucky = new Date('2023-01-27T00:00:00');
-const startDateCouple = new Date('2026-02-11T18:00:00');
+const startDateCouple = new Date('2026-02-11T19:00:00');
 
 function calculateTimeDiff(startDate, elementId) {
     const now = new Date();
