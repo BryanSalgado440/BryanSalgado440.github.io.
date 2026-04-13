@@ -80,7 +80,7 @@ messageButton.addEventListener('click', () => {
 
 // --- CONTADORES PRECISOS ---
 const startDateLucky = new Date('2023-01-27T00:00:00');
-const startDateCouple = new Date('2026-02-11T19:00:00');
+const startDateCouple = new Date('2026-02-11T18:00:00');
 
 function calculateTimeDiff(startDate, elementId) {
     const now = new Date();
@@ -106,6 +106,18 @@ function calculateTimeDiff(startDate, elementId) {
 
 setInterval(() => { calculateTimeDiff(startDateLucky, 'countdown'); calculateTimeDiff(startDateCouple, 'countdown-pareja'); }, 1000);
 
+// --- LÓGICA DE CARTAS (TYPING) Y VARIABLES GLOBALES ---
+const letterAudio = document.getElementById('letter-music');
+const galleryAudio = document.getElementById('gallery-music');
+let mainMusicPlaying = false;
+let typingInterval;
+
+// GESTIÓN DE PLAYLIST DE ANIVERSARIO
+const anniversaryPlaylist = ['Música_aniversario/A_Dónde_Vamos.mp3', 'Música_aniversario/Magia.mp3'];
+let currentAnniversaryIdx = 0;
+let isAnniversaryActive = false;
+let currentPageIdx = 0;
+
 // --- GALERÍA AUTO ---
 const galleryModal = document.getElementById('gallery-modal');
 const galleryImage = document.getElementById('gallery-image');
@@ -121,6 +133,11 @@ function showImg(idx) {
 }
 
 document.getElementById('gallery-button').addEventListener('click', () => {
+    // Lógica de música para la galería
+    if (!audio.paused) { mainMusicPlaying = true; audio.pause(); }
+    galleryAudio.currentTime = 0;
+    galleryAudio.play().catch(e => console.log("Error al reproducir música en galería"));
+
     showImg(currentImgIdx);
     galleryModal.classList.add('visible');
     galInterval = setInterval(() => showImg(currentImgIdx + 1), 4000);
@@ -129,21 +146,15 @@ document.getElementById('gallery-button').addEventListener('click', () => {
 document.querySelector('#gallery-modal .close-button').addEventListener('click', () => {
     galleryModal.classList.remove('visible');
     clearInterval(galInterval);
+    
+    // Detener música de galería y reanudar principal
+    galleryAudio.pause();
+    if (mainMusicPlaying) { audio.play(); mainMusicPlaying = false; }
 });
 
 document.querySelector('.prev').addEventListener('click', () => showImg(currentImgIdx - 1));
 document.querySelector('.next').addEventListener('click', () => showImg(currentImgIdx + 1));
 
-// --- LÓGICA DE CARTAS (TYPING) ---
-const letterAudio = document.getElementById('letter-music');
-let mainMusicPlaying = false;
-let typingInterval;
-
-// GESTIÓN DE PLAYLIST DE ANIVERSARIO
-const anniversaryPlaylist = ['Música_aniversario/A_Dónde_Vamos.mp3', 'Música_aniversario/Magia.mp3'];
-let currentAnniversaryIdx = 0;
-let isAnniversaryActive = false;
-let currentPageIdx = 0;
 
 function typeWriter(element, htmlContent, container) {
     element.innerHTML = "";
@@ -158,7 +169,7 @@ function typeWriter(element, htmlContent, container) {
             element.innerHTML = htmlContent;
             clearInterval(typingInterval);
         }
-    }, 57); 
+    }, 45); 
 }
 
 // Para la "Carta Para Ti" (Navegación entre textos originales)
@@ -223,7 +234,7 @@ function closeAllLetters() {
     });
     letterAudio.pause();
     isAnniversaryActive = false;
-    if (mainMusicPlaying) audio.play();
+    if (mainMusicPlaying) { audio.play(); mainMusicPlaying = false; }
 }
 
 document.querySelectorAll('.close-letter-button').forEach(btn => btn.addEventListener('click', closeAllLetters));
