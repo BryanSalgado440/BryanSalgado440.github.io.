@@ -133,11 +133,9 @@ function showImg(idx) {
 }
 
 document.getElementById('gallery-button').addEventListener('click', () => {
-    // Lógica de música para la galería
     if (!audio.paused) { mainMusicPlaying = true; audio.pause(); }
     galleryAudio.currentTime = 0;
     galleryAudio.play().catch(e => console.log("Error al reproducir música en galería"));
-
     showImg(currentImgIdx);
     galleryModal.classList.add('visible');
     galInterval = setInterval(() => showImg(currentImgIdx + 1), 4000);
@@ -146,8 +144,6 @@ document.getElementById('gallery-button').addEventListener('click', () => {
 document.querySelector('#gallery-modal .close-button').addEventListener('click', () => {
     galleryModal.classList.remove('visible');
     clearInterval(galInterval);
-    
-    // Detener música de galería y reanudar principal
     galleryAudio.pause();
     if (mainMusicPlaying) { audio.play(); mainMusicPlaying = false; }
 });
@@ -172,7 +168,7 @@ function typeWriter(element, htmlContent, container) {
     }, 57); 
 }
 
-// Para la "Carta Para Ti" (Navegación entre textos originales)
+// Para la "Carta Para Ti" (Dinámica)
 function updateLetterPage() {
     const pages = document.querySelectorAll('#letter-modal .letter-page');
     const title = document.getElementById('modal-title');
@@ -181,9 +177,14 @@ function updateLetterPage() {
     const container = document.getElementById('letter-text');
 
     pages.forEach((p, idx) => p.classList.toggle('active', idx === currentPageIdx));
-    title.innerText = (currentPageIdx === 0) ? "Unas Palabras Solo Para Ti..." : "Nuestro Camino Juntos ❤️";
+    
+    // Títulos dinámicos según la página
+    if(currentPageIdx === 0) title.innerText = "Unas Palabras Solo Para Ti...";
+    else if(currentPageIdx === 1) title.innerText = "Nuestro Primer Mes ❤️";
+    else title.innerText = "Dos Meses de Amor 💞";
+
     prevBtn.style.display = (currentPageIdx === 0) ? 'none' : 'inline-block';
-    nextBtn.style.display = (currentPageIdx === 0) ? 'inline-block' : 'none';
+    nextBtn.style.display = (currentPageIdx === pages.length - 1) ? 'none' : 'inline-block';
 
     const activePage = pages[currentPageIdx];
     const originalHTML = activePage.getAttribute('data-original') || activePage.innerHTML;
@@ -192,7 +193,6 @@ function updateLetterPage() {
     typeWriter(activePage, originalHTML, container);
 }
 
-// Botón: Abrir Carta Para Ti
 document.getElementById('letter-button').addEventListener('click', () => {
     if (!audio.paused) { mainMusicPlaying = true; audio.pause(); }
     currentPageIdx = 0;
@@ -204,7 +204,6 @@ document.getElementById('letter-button').addEventListener('click', () => {
     updateLetterPage();
 });
 
-// Botón: Abrir Carta Aniversario
 document.getElementById('anniversary-button').addEventListener('click', () => {
     if (!audio.paused) { mainMusicPlaying = true; audio.pause(); }
     isAnniversaryActive = true;
@@ -223,9 +222,13 @@ document.getElementById('anniversary-button').addEventListener('click', () => {
     setTimeout(() => typeWriter(page, originalHTML, container), 600);
 });
 
-// Navegación dentro de "Carta Para Ti"
-document.getElementById('next-page').addEventListener('click', () => { currentPageIdx = 1; updateLetterPage(); });
-document.getElementById('prev-page').addEventListener('click', () => { currentPageIdx = 0; updateLetterPage(); });
+document.getElementById('next-page').addEventListener('click', () => { 
+    const pagesCount = document.querySelectorAll('#letter-modal .letter-page').length;
+    if(currentPageIdx < pagesCount - 1) { currentPageIdx++; updateLetterPage(); }
+});
+document.getElementById('prev-page').addEventListener('click', () => { 
+    if(currentPageIdx > 0) { currentPageIdx--; updateLetterPage(); }
+});
 
 function closeAllLetters() {
     clearInterval(typingInterval);
