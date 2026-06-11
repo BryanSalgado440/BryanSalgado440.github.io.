@@ -178,10 +178,11 @@ function updateLetterPage() {
 
     pages.forEach((p, idx) => p.classList.toggle('active', idx === currentPageIdx));
     
-    // Títulos dinámicos según la página
+    // Títulos dinámicos según la página (ahora soporta hasta 4 páginas)
     if(currentPageIdx === 0) title.innerText = "Unas Palabras Solo Para Ti...";
     else if(currentPageIdx === 1) title.innerText = "Nuestro Primer Mes ❤️";
-    else title.innerText = "Dos Meses de Amor 💞";
+    else if(currentPageIdx === 2) title.innerText = "Dos Meses de Amor 💞";
+    else title.innerText = "Tres Meses Juntos ✨";
 
     prevBtn.style.display = (currentPageIdx === 0) ? 'none' : 'inline-block';
     nextBtn.style.display = (currentPageIdx === pages.length - 1) ? 'none' : 'inline-block';
