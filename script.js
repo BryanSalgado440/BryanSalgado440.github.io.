@@ -112,8 +112,8 @@ const galleryAudio = document.getElementById('gallery-music');
 let mainMusicPlaying = false;
 let typingInterval;
 
-// GESTIÓN DE PLAYLIST DE ANIVERSARIO
-const anniversaryPlaylist = ['Música_aniversario/punalada.mp3', 'Música_aniversario/Magia.mp3'];
+// GESTIÓN DE PLAYLIST DE ANIVERSARIO (Restaurada a su versión original)
+const anniversaryPlaylist = ['Música_aniversario/A_Dónde_Vamos.mp3', 'Música_aniversario/Magia.mp3'];
 let currentAnniversaryIdx = 0;
 let isAnniversaryActive = false;
 let currentPageIdx = 0;
