@@ -112,8 +112,12 @@ const galleryAudio = document.getElementById('gallery-music');
 let mainMusicPlaying = false;
 let typingInterval;
 
-// GESTIÓN DE PLAYLIST DE ANIVERSARIO
-const anniversaryPlaylist = ['Música_aniversario/Punaladas.mp3', 'Música_aniversario/Magia.mp3'];
+// GESTIÓN DE PLAYLIST DE ANIVERSARIO (Con la nueva canción añadida en segunda posición)
+const anniversaryPlaylist = [
+    "Música_aniversario/Punaladas.mp3", 
+    "Música_aniversario/I_Wouldn't_Mind_by_He_Is_We.mp3", 
+    "Música_aniversario/Magia.mp3"
+];
 let currentAnniversaryIdx = 0;
 let isAnniversaryActive = false;
 let currentPageIdx = 0;
