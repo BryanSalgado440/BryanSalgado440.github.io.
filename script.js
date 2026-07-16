@@ -113,7 +113,7 @@ let mainMusicPlaying = false;
 let typingInterval;
 
 // GESTIÓN DE PLAYLIST DE ANIVERSARIO
-const anniversaryPlaylist = ['Música_aniversario/Punalada.mp3', 'Música_aniversario/Magia.mp3'];
+const anniversaryPlaylist = ['Música_aniversario/Punaladas.mp3', 'Música_aniversario/Magia.mp3'];
 let currentAnniversaryIdx = 0;
 let isAnniversaryActive = false;
 let currentPageIdx = 0;
@@ -168,7 +168,7 @@ function typeWriter(element, htmlContent, container) {
     }, 57); 
 }
 
-// Para la "Carta Para Ti" (Dinámica)
+// Para la "Carta Para Ti" (Dinámica - Adaptada para 5 páginas)
 function updateLetterPage() {
     const pages = document.querySelectorAll('#letter-modal .letter-page');
     const title = document.getElementById('modal-title');
@@ -178,7 +178,7 @@ function updateLetterPage() {
 
     pages.forEach((p, idx) => p.classList.toggle('active', idx === currentPageIdx));
     
-    // Títulos dinámicos según la página (soporta 5 páginas)
+    // Títulos dinámicos según la página
     if(currentPageIdx === 0) title.innerText = "Unas Palabras Solo Para Ti...";
     else if(currentPageIdx === 1) title.innerText = "Nuestro Primer Mes ❤️";
     else if(currentPageIdx === 2) title.innerText = "Dos Meses de Amor 💞";
