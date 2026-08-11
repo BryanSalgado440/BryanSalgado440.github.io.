@@ -112,7 +112,7 @@ const galleryAudio = document.getElementById('gallery-music');
 let mainMusicPlaying = false;
 let typingInterval;
 
-// GESTIÓN DE PLAYLIST DE ANIVERSARIO (Con la nueva canción añadida en segunda posición)
+// GESTIÓN DE PLAYLIST DE ANIVERSARIO
 const anniversaryPlaylist = [
     "Música_aniversario/Punaladas.mp3", 
     "Música_aniversario/I_Wouldn't_Mind_by_He_Is_We.mp3", 
@@ -172,7 +172,7 @@ function typeWriter(element, htmlContent, container) {
     }, 57); 
 }
 
-// Para la "Carta Para Ti" (Dinámica - Adaptada para 5 páginas)
+// Para la "Carta Para Ti" (Dinámica - Adaptada para 6 páginas)
 function updateLetterPage() {
     const pages = document.querySelectorAll('#letter-modal .letter-page');
     const title = document.getElementById('modal-title');
@@ -187,7 +187,8 @@ function updateLetterPage() {
     else if(currentPageIdx === 1) title.innerText = "Nuestro Primer Mes ❤️";
     else if(currentPageIdx === 2) title.innerText = "Dos Meses de Amor 💞";
     else if(currentPageIdx === 3) title.innerText = "Tres Meses Juntos ✨";
-    else title.innerText = "Cuatro Meses de Felicidad 💖";
+    else if(currentPageIdx === 4) title.innerText = "Cuatro Meses de Felicidad 💖";
+    else title.innerText = "Cinco Meses Maravillosos 🥰";
 
     prevBtn.style.display = (currentPageIdx === 0) ? 'none' : 'inline-block';
     nextBtn.style.display = (currentPageIdx === pages.length - 1) ? 'none' : 'inline-block';
