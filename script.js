@@ -112,7 +112,7 @@ const galleryAudio = document.getElementById('gallery-music');
 let mainMusicPlaying = false;
 let typingInterval;
 
-// GESTIÓN DE PLAYLIST DE ANIVERSARIO (Con la nueva canción añadida en segunda posición)
+// GESTIÓN DE PLAYLIST DE ANIVERSARIO
 const anniversaryPlaylist = [
     "Música_aniversario/Punaladas.mp3", 
     "Música_aniversario/I_Wouldn't_Mind_by_He_Is_We.mp3", 
@@ -155,14 +155,15 @@ document.querySelector('#gallery-modal .close-button').addEventListener('click',
 document.querySelector('.prev').addEventListener('click', () => showImg(currentImgIdx - 1));
 document.querySelector('.next').addEventListener('click', () => showImg(currentImgIdx + 1));
 
-
 function typeWriter(element, htmlContent, container) {
     element.innerHTML = "";
     let i = 0;
     clearInterval(typingInterval);
     typingInterval = setInterval(() => {
         if (i < htmlContent.length) {
-            if (htmlContent.charAt(i) === "<") i = htmlContent.indexOf(">", i) + 1; else i++;
+            if (htmlContent.charAt(i) === "<") i = htmlContent.indexOf(">", i) + 1;
+            else if (htmlContent.charAt(i) === "&") i = htmlContent.indexOf(";", i) + 1;
+            else i++;
             element.innerHTML = htmlContent.slice(0, i) + '<span class="typing-cursor"></span>';
             container.scrollTop = container.scrollHeight;
         } else {
@@ -172,7 +173,7 @@ function typeWriter(element, htmlContent, container) {
     }, 57); 
 }
 
-// Para la "Carta Para Ti" (Dinámica - Adaptada para 5 páginas)
+// Para la "Carta Para Ti" (Dinámica - Adaptada para 7 páginas)
 function updateLetterPage() {
     const pages = document.querySelectorAll('#letter-modal .letter-page');
     const title = document.getElementById('modal-title');
@@ -187,7 +188,9 @@ function updateLetterPage() {
     else if(currentPageIdx === 1) title.innerText = "Nuestro Primer Mes ❤️";
     else if(currentPageIdx === 2) title.innerText = "Dos Meses de Amor 💞";
     else if(currentPageIdx === 3) title.innerText = "Tres Meses Juntos ✨";
-    else title.innerText = "Cuatro Meses de Felicidad 💖";
+    else if(currentPageIdx === 4) title.innerText = "Cuatro Meses de Felicidad 💖";
+    else if(currentPageIdx === 5) title.innerText = "Cinco Meses Juntitos 💖";
+    else if(currentPageIdx === 6) title.innerText = "Seis Meses Inolvidables 💍";
 
     prevBtn.style.display = (currentPageIdx === 0) ? 'none' : 'inline-block';
     nextBtn.style.display = (currentPageIdx === pages.length - 1) ? 'none' : 'inline-block';
