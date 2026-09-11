@@ -82,8 +82,9 @@ p#message { font-size: 1.25em; color: #444; font-weight: 600; line-height: 1.6; 
 .letter-content h2 { font-family: 'Dancing Script', cursive; color: #c83b50; font-size: 2.8em; margin: 0 auto 20px auto; text-align: center; border-bottom: 2px solid rgba(200, 59, 80, 0.3); padding-bottom: 10px; }
 
 .letter-text-box, #letter-text, #anniversary-text { flex-grow: 1; overflow-y: auto; padding-right: 20px; scrollbar-width: thin; scrollbar-color: #d7ccc8 #faf3e0; scroll-behavior: smooth; }
-.letter-text-box p, #letter-text p, #anniversary-text p { display: inline; font-size: 1.4em; line-height: 2.4; text-decoration: underline; text-decoration-color: rgba(141, 110, 99, 0.3); text-underline-offset: 12px; text-decoration-thickness: 1.5px; }
-.letter-text-box p::after, #letter-text p::after, #anniversary-text p::after { content: '\A\A'; white-space: pre; display: block; height: 0; }
+.letter-text-box p, #letter-text p, #anniversary-text p { display: inline-block; width: 100%; min-height: 1.2em; font-size: 1.4em; line-height: 2.4; text-decoration: underline; text-decoration-color: rgba(141, 110, 99, 0.3); text-underline-offset: 12px; text-decoration-thickness: 1.5px; margin: 0; }
+.letter-text-box p:empty, #letter-text p:empty, #anniversary-text p:empty { min-height: 1.6em; text-decoration: none; }
+.letter-text-box p::after, #letter-text p::after, #anniversary-text p::after { content: ''; display: block; }
 
 .letter-page, .anniversary-page { display: none; }
 .letter-page.active, .anniversary-page.active { display: block; }
