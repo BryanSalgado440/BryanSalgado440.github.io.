@@ -76,7 +76,7 @@ p#message { font-size: 1.25em; color: #444; font-weight: 600; line-height: 1.6; 
 .prev, .next { cursor: pointer; position: absolute; top: 50%; width: auto; margin-top: -22px; padding: 20px; color: white; font-weight: bold; font-size: 25px; transition: 0.3s; user-select: none; background-color: rgba(0,0,0,0.5); z-index: 105; border-radius: 50%; }
 .prev { left: 10px; } .next { right: 10px; }
 
-/* Contenido de cartas - MODIFICADO CON TRANSICIÓN FADE */
+/* Contenido de cartas */
 .letter-content { font-family: 'Cormorant Garamond', serif; background: #faf3e0; color: #4e342e; padding: 40px 50px; border-radius: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 800px; width: 90vw; max-height: 85vh; position: relative; text-align: left; display: flex; flex-direction: column; z-index: 2; transition: opacity 0.5s ease-in-out; }
 .letter-content.fade-out { opacity: 0; }
 .close-letter-button { font-family: 'Quicksand', sans-serif; position: absolute; top: 10px; right: 20px; color: #8d6e63; font-size: 35px; font-weight: bold; cursor: pointer; transition: 0.3s; }
@@ -109,7 +109,7 @@ p#message { font-size: 1.25em; color: #444; font-weight: 600; line-height: 1.6; 
 .shooting-star::before { content: ''; position: absolute; top: 50%; transform: translateY(-50%); width: 4px; height: 4px; background: white; border-radius: 50%; box-shadow: 0 0 10px white, 0 0 20px white; }
 @keyframes shooting { 0% { transform: translateX(0) translateY(0) rotate(-45deg); opacity: 1; width: 0; } 70% { opacity: 1; } 100% { transform: translateX(-300px) translateY(300px) rotate(-45deg); opacity: 0; width: 150px; } }
 
-/* --- DISEÑO RESPONSIVO (ORIGINAL RESTAURADO) --- */
+/* --- DISEÑO RESPONSIVO (ORIGINAL RESTAURADO Y SEGURO) --- */
 @media (max-width: 768px) {
     body { padding: 10px; align-items: flex-start; }
     .container { padding: 25px 20px; max-width: 95%; gap: 10px; }
