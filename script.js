@@ -134,31 +134,6 @@ function calculateTimeDiff(startDate, elementId) {
 
 setInterval(() => { calculateTimeDiff(startDateLucky, 'countdown'); calculateTimeDiff(startDateCouple, 'countdown-pareja'); }, 1000);
 
-// --- ESTRELLAS FUGACES ---
-let shootingStarInterval;
-function createShootingStar() {
-    const containers = document.querySelectorAll('.modal.visible .shooting-stars-container');
-    if (containers.length === 0) return;
-
-    const star = document.createElement('div');
-    star.classList.add('shooting-star');
-    star.style.top = `${Math.random() * 50}%`;
-    star.style.left = `${Math.random() * 80 + 20}%`;
-    
-    containers[0].appendChild(star);
-    setTimeout(() => star.remove(), 2000);
-}
-
-function startShootingStars() {
-    if (shootingStarInterval) clearInterval(shootingStarInterval);
-    shootingStarInterval = setInterval(() => {
-        if (Math.random() > 0.7) createShootingStar(); 
-    }, 3000);
-}
-function stopShootingStars() {
-    clearInterval(shootingStarInterval);
-}
-
 // --- GALERÍA AUTO ---
 const galleryModal = document.getElementById('gallery-modal');
 const galleryImage = document.getElementById('gallery-image');
@@ -228,7 +203,6 @@ let currentPageIdx = 0;
 
 function typeWriter(element, htmlContent, container, skipBtn) {
     element.innerHTML = "";
-    element.classList.add('is-typing'); // Activa el cursor de CSS sin inyectar span en el DOM
     let i = 0;
     clearInterval(typingInterval);
     isTyping = true;
@@ -243,14 +217,10 @@ function typeWriter(element, htmlContent, container, skipBtn) {
             if (htmlContent.charAt(i) === "<") i = htmlContent.indexOf(">", i) + 1;
             else if (htmlContent.charAt(i) === "&") i = htmlContent.indexOf(";", i) + 1;
             else i++;
-            
-            // Ya no concatenamos el <span> aquí, para evitar que salte de línea
-            element.innerHTML = htmlContent.slice(0, i);
-            
-            if(container) container.scrollTop = container.scrollHeight;
+            element.innerHTML = htmlContent.slice(0, i) + '<span class="typing-cursor"></span>';
+            container.scrollTop = container.scrollHeight;
         } else {
             element.innerHTML = htmlContent;
-            element.classList.remove('is-typing'); // Apaga el cursor CSS
             isTyping = false;
             clearInterval(typingInterval);
             if(skipBtn) skipBtn.style.display = 'none';
@@ -262,7 +232,6 @@ function skipTyping() {
     if (isTyping && currentElement) {
         clearInterval(typingInterval);
         currentElement.innerHTML = currentHtmlContent;
-        currentElement.classList.remove('is-typing');
         isTyping = false;
         document.querySelectorAll('.skip-btn').forEach(btn => btn.style.display = 'none');
     }
@@ -271,46 +240,34 @@ function skipTyping() {
 document.getElementById('skip-typing-button').addEventListener('click', skipTyping);
 document.getElementById('skip-anniversary-btn').addEventListener('click', skipTyping);
 
-function updateLetterPage(withFade = false) {
+function updateLetterPage() {
     const pages = document.querySelectorAll('#letter-modal .letter-page');
     const title = document.getElementById('modal-title');
     const prevBtn = document.getElementById('prev-page');
     const nextBtn = document.getElementById('next-page');
     const container = document.getElementById('letter-text');
     const skipBtn = document.getElementById('skip-typing-button');
-    const contentBox = document.querySelector('#letter-modal .letter-content');
 
-    const updateContent = () => {
-        pages.forEach((p, idx) => p.classList.toggle('active', idx === currentPageIdx));
-        
-        if(currentPageIdx === 0) title.innerText = "Unas Palabras Solo Para Ti...";
-        else if(currentPageIdx === 1) title.innerText = "Nuestro Primer Mes ❤️";
-        else if(currentPageIdx === 2) title.innerText = "Dos Meses de Amor 💞";
-        else if(currentPageIdx === 3) title.innerText = "Tres Meses Juntos ✨";
-        else if(currentPageIdx === 4) title.innerText = "Cuatro Meses de Felicidad 💖";
-        else if(currentPageIdx === 5) title.innerText = "Cinco Meses Juntitos 💖";
-        else if(currentPageIdx === 6) title.innerText = "Seis Meses Inolvidables 💍";
-        else if(currentPageIdx === 7) title.innerText = "Siete Meses de Magia ✨";
-        else if(currentPageIdx === 8) title.innerText = "Ocho Meses Contigo 💖";
+    pages.forEach((p, idx) => p.classList.toggle('active', idx === currentPageIdx));
+    
+    if(currentPageIdx === 0) title.innerText = "Unas Palabras Solo Para Ti...";
+    else if(currentPageIdx === 1) title.innerText = "Nuestro Primer Mes ❤️";
+    else if(currentPageIdx === 2) title.innerText = "Dos Meses de Amor 💞";
+    else if(currentPageIdx === 3) title.innerText = "Tres Meses Juntos ✨";
+    else if(currentPageIdx === 4) title.innerText = "Cuatro Meses de Felicidad 💖";
+    else if(currentPageIdx === 5) title.innerText = "Cinco Meses Juntitos 💖";
+    else if(currentPageIdx === 6) title.innerText = "Seis Meses Inolvidables 💍";
+    else if(currentPageIdx === 7) title.innerText = "Siete Meses de Magia ✨";
+    else if(currentPageIdx === 8) title.innerText = "Ocho Meses Contigo 💖";
 
-        prevBtn.style.display = (currentPageIdx === 0) ? 'none' : 'inline-block';
-        nextBtn.style.display = (currentPageIdx === pages.length - 1) ? 'none' : 'inline-block';
+    prevBtn.style.display = (currentPageIdx === 0) ? 'none' : 'inline-block';
+    nextBtn.style.display = (currentPageIdx === pages.length - 1) ? 'none' : 'inline-block';
 
-        const activePage = pages[currentPageIdx];
-        const originalHTML = activePage.getAttribute('data-original') || activePage.innerHTML;
-        if (!activePage.getAttribute('data-original')) activePage.setAttribute('data-original', originalHTML);
-        
-        typeWriter(activePage, originalHTML, container, skipBtn);
-        if (withFade) contentBox.classList.remove('fade-out');
-    };
-
-    if (withFade) {
-        contentBox.classList.add('fade-out');
-        clearInterval(typingInterval);
-        setTimeout(updateContent, 400);
-    } else {
-        updateContent();
-    }
+    const activePage = pages[currentPageIdx];
+    const originalHTML = activePage.getAttribute('data-original') || activePage.innerHTML;
+    if (!activePage.getAttribute('data-original')) activePage.setAttribute('data-original', originalHTML);
+    
+    typeWriter(activePage, originalHTML, container, skipBtn);
 }
 
 document.getElementById('letter-button').addEventListener('click', () => {
@@ -321,8 +278,7 @@ document.getElementById('letter-button').addEventListener('click', () => {
     letterAudio.src = 'canciones-carta/A_Thousand_Years.mp3';
     letterAudio.loop = true;
     letterAudio.play().catch(e => console.log(e));
-    updateLetterPage(false);
-    startShootingStars();
+    updateLetterPage();
 });
 
 document.getElementById('anniversary-button').addEventListener('click', () => {
@@ -338,12 +294,11 @@ document.getElementById('anniversary-button').addEventListener('click', () => {
     letterAudio.src = anniversaryPlaylist[0];
     letterAudio.loop = false;
     letterAudio.play().catch(e => console.log(e));
-    startShootingStars();
     
     const originalHTML = page.getAttribute('data-original') || page.innerHTML;
     if (!page.getAttribute('data-original')) page.setAttribute('data-original', originalHTML);
     
-    setTimeout(() => typeWriter(page, originalHTML, container, skipBtn), 600);
+    typeWriter(page, originalHTML, container, skipBtn);
 });
 
 document.getElementById('next-page').addEventListener('click', () => { 
@@ -351,14 +306,14 @@ document.getElementById('next-page').addEventListener('click', () => {
     if(currentPageIdx < pagesCount - 1) { 
         if(isTyping) skipTyping();
         currentPageIdx++; 
-        updateLetterPage(true); 
+        updateLetterPage(); 
     }
 });
 document.getElementById('prev-page').addEventListener('click', () => { 
     if(currentPageIdx > 0) { 
         if(isTyping) skipTyping();
         currentPageIdx--; 
-        updateLetterPage(true); 
+        updateLetterPage(); 
     }
 });
 
@@ -370,7 +325,6 @@ function closeAllLetters() {
     });
     letterAudio.pause();
     isAnniversaryActive = false;
-    stopShootingStars();
     if (mainMusicPlaying) { 
         audio.volume = 0;
         audio.play(); 
