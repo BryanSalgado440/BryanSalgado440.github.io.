@@ -6,14 +6,14 @@ window.addEventListener('load', () => {
         setTimeout(() => { preloader.style.display = 'none'; }, 800);
     }
     generateHearts();
-    preloadGalleryImagesInit(); // Solo precarga unas pocas al inicio
+    preloadGalleryImagesInit();
 });
 
 function generateHearts() {
     const heartsContainer = document.querySelector('.hearts-container');
     if (!heartsContainer) return;
     const heartEmojis = ['❤️', '💖', '✨', '🥰', '💕'];
-    const numHearts = 40;
+    const numHearts = 30; // Reducido ligeramente para mayor rendimiento en móviles
     for (let i = 0; i < numHearts; i++) {
         const heart = document.createElement('div');
         heart.classList.add('heart-emoji');
@@ -21,7 +21,7 @@ function generateHearts() {
         heart.style.left = `${Math.random() * 100}%`;
         heart.style.animationDuration = `${Math.random() * 8 + 7}s`;
         heart.style.animationDelay = `${Math.random() * 10}s`;
-        heart.style.fontSize = `${Math.random() * 20 + 20}px`;
+        heart.style.fontSize = `${Math.random() * 15 + 18}px`;
         heartsContainer.appendChild(heart);
     }
 }
@@ -132,7 +132,6 @@ let currentTypingElement = null;
 let currentTypingContent = "";
 let currentSkipButton = null;
 
-// GESTIÓN DE PLAYLIST DE ANIVERSARIO
 const anniversaryPlaylist = [
     "Música_aniversario/Punaladas.mp3", 
     "Música_aniversario/I_Wouldn't_Mind_by_He_Is_We.mp3", 
@@ -229,17 +228,22 @@ function typeWriter(element, htmlContent, container, isAnniversary = false) {
     
     if (currentSkipButton) currentSkipButton.style.display = 'inline-block';
 
+    // Reiniciar scroll al principio de la página al empezar a escribir
+    if (container) container.scrollTop = 0;
+
     typingInterval = setInterval(() => {
         if (i < htmlContent.length) {
             if (htmlContent.charAt(i) === "<") i = htmlContent.indexOf(">", i) + 1;
             else if (htmlContent.charAt(i) === "&") i = htmlContent.indexOf(";", i) + 1;
             else i++;
             
-            // Protección de fallos al saltar etiquetas html
             if(i <= 0 || i > htmlContent.length) { i = htmlContent.length; } 
 
             element.innerHTML = htmlContent.slice(0, i) + '<span class="typing-cursor"></span>';
-            if (container) container.scrollTop = container.scrollHeight;
+            // Scroll suave solo cuando sea estrictamente necesario para evitar saltos en móviles
+            if (container && container.scrollHeight - container.scrollTop <= container.clientHeight + 150) {
+                container.scrollTop = container.scrollHeight;
+            }
         } else {
             element.innerHTML = htmlContent;
             clearInterval(typingInterval);
@@ -378,7 +382,7 @@ if (letterAudio) {
     });
 }
 
-// --- EFECTO CLIC OPTIMIZADO (Throttle de 300ms) ---
+// --- EFECTO CLIC OPTIMIZADO ---
 let lastClickTime = 0;
 document.addEventListener('mousedown', (e) => {
     if (e.target.tagName === 'BUTTON') {
@@ -387,17 +391,17 @@ document.addEventListener('mousedown', (e) => {
         lastClickTime = now;
 
         const heartEmojis = ['❤️', '💖', '✨', '🥰', '💕', '💗', '🌸'];
-        const amount = 18; 
+        const amount = 12; // Ajustado para optimizar rendimiento móvil
         for (let i = 0; i < amount; i++) {
             const h = document.createElement('div');
             h.className = 'click-heart';
             h.innerText = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
             h.style.left = e.pageX + 'px';
             h.style.top = e.pageY + 'px';
-            const xMove = (Math.random() - 0.5) * 350; 
-            const yMove = (Math.random() - 0.7) * 350; 
+            const xMove = (Math.random() - 0.5) * 250; 
+            const yMove = (Math.random() - 0.7) * 250; 
             const rotation = Math.random() * 360;
-            const size = Math.random() * 15 + 15;
+            const size = Math.random() * 12 + 14;
             h.style.setProperty('--x-move', `${xMove}px`);
             h.style.setProperty('--y-move', `${yMove}px`);
             h.style.setProperty('--rotation', `${rotation}deg`);
