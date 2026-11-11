@@ -228,6 +228,7 @@ let currentPageIdx = 0;
 
 function typeWriter(element, htmlContent, container, skipBtn) {
     element.innerHTML = "";
+    element.classList.add('is-typing'); // Activa el cursor de CSS sin inyectar span en el DOM
     let i = 0;
     clearInterval(typingInterval);
     isTyping = true;
@@ -242,11 +243,14 @@ function typeWriter(element, htmlContent, container, skipBtn) {
             if (htmlContent.charAt(i) === "<") i = htmlContent.indexOf(">", i) + 1;
             else if (htmlContent.charAt(i) === "&") i = htmlContent.indexOf(";", i) + 1;
             else i++;
-            element.innerHTML = htmlContent.slice(0, i) + '<span class="typing-cursor"></span>';
-            // Suavizamos el scroll para que no provoque saltos de pantalla en móviles
-            container.scrollTop = container.scrollHeight;
+            
+            // Ya no concatenamos el <span> aquí, para evitar que salte de línea
+            element.innerHTML = htmlContent.slice(0, i);
+            
+            if(container) container.scrollTop = container.scrollHeight;
         } else {
             element.innerHTML = htmlContent;
+            element.classList.remove('is-typing'); // Apaga el cursor CSS
             isTyping = false;
             clearInterval(typingInterval);
             if(skipBtn) skipBtn.style.display = 'none';
@@ -258,6 +262,7 @@ function skipTyping() {
     if (isTyping && currentElement) {
         clearInterval(typingInterval);
         currentElement.innerHTML = currentHtmlContent;
+        currentElement.classList.remove('is-typing');
         isTyping = false;
         document.querySelectorAll('.skip-btn').forEach(btn => btn.style.display = 'none');
     }
