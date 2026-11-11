@@ -1,14 +1,17 @@
 // --- CARGA INICIAL ---
 window.addEventListener('load', () => {
     const preloader = document.getElementById('preloader');
-    preloader.classList.add('fade-out');
-    setTimeout(() => { preloader.style.display = 'none'; }, 800);
+    if (preloader) {
+        preloader.classList.add('fade-out');
+        setTimeout(() => { preloader.style.display = 'none'; }, 800);
+    }
     generateHearts();
     preloadGalleryImagesInit(); // Solo precarga unas pocas al inicio
 });
 
 function generateHearts() {
     const heartsContainer = document.querySelector('.hearts-container');
+    if (!heartsContainer) return;
     const heartEmojis = ['❤️', '💖', '✨', '🥰', '💕'];
     const numHearts = 40;
     for (let i = 0; i < numHearts; i++) {
@@ -36,21 +39,24 @@ let currentSongIndex = 0;
 let musicStarted = false;
 
 function loadSong(songIndex) {
+    if (!audio) return;
     audio.src = songFiles[songIndex];
-    songNameDisplay.innerText = `Sonando: ${songDisplayNames[songIndex]}`;
-    audio.play().catch(e => console.log("Play"));
+    if (songNameDisplay) songNameDisplay.innerText = `Sonando: ${songDisplayNames[songIndex]}`;
+    audio.play().catch(e => console.log("Audio autoplay bloqueado o archivo no encontrado"));
 }
-function playPauseSong() { if (audio.paused) audio.play(); else audio.pause(); }
+function playPauseSong() { if (audio && audio.paused) audio.play(); else if (audio) audio.pause(); }
 function nextSong() { currentSongIndex = (currentSongIndex + 1) % songFiles.length; loadSong(currentSongIndex); }
 function prevSong() { currentSongIndex = (currentSongIndex - 1 + songFiles.length) % songFiles.length; loadSong(currentSongIndex); }
 
-prevSongButton.addEventListener('click', prevSong);
-nextSongButton.addEventListener('click', nextSong);
-playPauseButton.addEventListener('click', playPauseSong);
-audio.addEventListener('ended', nextSong);
-volumeSlider.addEventListener('input', (e) => audio.volume = e.target.value);
-audio.onplay = () => playPauseButton.innerText = "⏸️ Pausa";
-audio.onpause = () => playPauseButton.innerText = "▶️ Play";
+if (prevSongButton) prevSongButton.addEventListener('click', prevSong);
+if (nextSongButton) nextSongButton.addEventListener('click', nextSong);
+if (playPauseButton) playPauseButton.addEventListener('click', playPauseSong);
+if (audio) {
+    audio.addEventListener('ended', nextSong);
+    audio.onplay = () => { if(playPauseButton) playPauseButton.innerText = "⏸️ Pausa"; };
+    audio.onpause = () => { if(playPauseButton) playPauseButton.innerText = "▶️ Play"; };
+}
+if (volumeSlider && audio) volumeSlider.addEventListener('input', (e) => audio.volume = e.target.value);
 
 // --- MENSAJES ROTATIVOS ---
 const messageElement = document.getElementById('message');
@@ -62,6 +68,7 @@ let messageTimer = null;
 
 function showNextMessage() {
     if (messageTimer) clearTimeout(messageTimer);
+    if (!messageElement) return;
     messageElement.classList.add('slide-out');
     setTimeout(() => {
         let newIndex;
@@ -73,19 +80,27 @@ function showNextMessage() {
     }, 800);
 }
 
-messageButton.addEventListener('click', () => {
-    if (!musicStarted) { loadSong(currentSongIndex); musicStarted = true; document.querySelectorAll('.music-button, .volume-control').forEach(el => el.classList.add('visible')); }
-    if (isFirstClick) { messageButton.innerHTML = "Siguiente mensaje 💕"; isFirstClick = false; }
-    showNextMessage();
-});
+if (messageButton) {
+    messageButton.addEventListener('click', () => {
+        if (!musicStarted) { 
+            loadSong(currentSongIndex); 
+            musicStarted = true; 
+            document.querySelectorAll('.music-button, .volume-control').forEach(el => el.classList.add('visible')); 
+        }
+        if (isFirstClick) { messageButton.innerHTML = "Siguiente mensaje 💕"; isFirstClick = false; }
+        showNextMessage();
+    });
+}
 
 // --- CONTADORES PRECISOS ---
 const startDateLucky = new Date('2023-01-27T00:00:00');
 const startDateCouple = new Date('2026-02-11T19:00:00');
 
 function calculateTimeDiff(startDate, elementId) {
-    const now = new Date();
     const targetElement = document.getElementById(elementId);
+    if (!targetElement) return;
+    
+    const now = new Date();
     const nowSecs = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
     const startSecs = startDate.getHours() * 3600 + startDate.getMinutes() * 60 + startDate.getSeconds();
 
@@ -135,14 +150,12 @@ let currentImgIdx = 0;
 let galInterval;
 let fullGalleryLoaded = false;
 
-// Precarga progresiva (solo 3 imágenes al cargar la web)
 function preloadGalleryImagesInit() {
     for(let i=0; i<3 && i<images.length; i++) {
         const img = new Image();
         img.src = images[i];
     }
 }
-// Carga el resto solo cuando se abre la galería
 function preloadRemainingGalleryImages() {
     if(fullGalleryLoaded) return;
     for(let i=3; i<images.length; i++) {
@@ -153,6 +166,7 @@ function preloadRemainingGalleryImages() {
 }
 
 function showImg(idx) {
+    if (!galleryImage) return;
     if (idx >= images.length) idx = 0; if (idx < 0) idx = images.length - 1;
     currentImgIdx = idx;
     galleryImage.style.opacity = '0';
@@ -162,42 +176,53 @@ function showImg(idx) {
     }, 400);
 }
 
-document.getElementById('gallery-button').addEventListener('click', () => {
-    preloadRemainingGalleryImages();
-    if (!audio.paused) { mainMusicPlaying = true; audio.pause(); }
-    galleryAudio.currentTime = 0;
-    galleryAudio.play().catch(e => console.log("Error al reproducir música en galería"));
-    showImg(currentImgIdx);
-    document.body.classList.add('modal-open');
-    galleryModal.classList.add('visible');
-    galInterval = setInterval(() => showImg(currentImgIdx + 1), 4000);
-});
+const galleryBtn = document.getElementById('gallery-button');
+if (galleryBtn) {
+    galleryBtn.addEventListener('click', () => {
+        preloadRemainingGalleryImages();
+        if (audio && !audio.paused) { mainMusicPlaying = true; audio.pause(); }
+        if (galleryAudio) { galleryAudio.currentTime = 0; galleryAudio.play().catch(e => console.log(e)); }
+        showImg(currentImgIdx);
+        document.body.classList.add('modal-open');
+        if (galleryModal) galleryModal.classList.add('visible');
+        galInterval = setInterval(() => showImg(currentImgIdx + 1), 4000);
+    });
+}
 
-document.querySelector('#gallery-modal .close-button').addEventListener('click', () => {
-    galleryModal.classList.remove('visible');
-    document.body.classList.remove('modal-open');
-    clearInterval(galInterval);
-    galleryAudio.pause();
-    if (mainMusicPlaying) { audio.play(); mainMusicPlaying = false; }
-});
+const closeGalleryBtn = document.querySelector('#gallery-modal .close-button');
+if (closeGalleryBtn) {
+    closeGalleryBtn.addEventListener('click', () => {
+        if (galleryModal) galleryModal.classList.remove('visible');
+        document.body.classList.remove('modal-open');
+        clearInterval(galInterval);
+        if (galleryAudio) galleryAudio.pause();
+        if (mainMusicPlaying && audio) { audio.play(); mainMusicPlaying = false; }
+    });
+}
 
-document.querySelector('.prev').addEventListener('click', () => {
-    clearInterval(galInterval); 
-    showImg(currentImgIdx - 1);
-    galInterval = setInterval(() => showImg(currentImgIdx + 1), 4000);
-});
-document.querySelector('.next').addEventListener('click', () => {
-    clearInterval(galInterval);
-    showImg(currentImgIdx + 1);
-    galInterval = setInterval(() => showImg(currentImgIdx + 1), 4000);
-});
+const prevBtnGal = document.querySelector('.prev');
+if (prevBtnGal) {
+    prevBtnGal.addEventListener('click', () => {
+        clearInterval(galInterval); 
+        showImg(currentImgIdx - 1);
+        galInterval = setInterval(() => showImg(currentImgIdx + 1), 4000);
+    });
+}
+const nextBtnGal = document.querySelector('.next');
+if (nextBtnGal) {
+    nextBtnGal.addEventListener('click', () => {
+        clearInterval(galInterval);
+        showImg(currentImgIdx + 1);
+        galInterval = setInterval(() => showImg(currentImgIdx + 1), 4000);
+    });
+}
 
 function typeWriter(element, htmlContent, container, isAnniversary = false) {
+    if (!element) return;
     element.innerHTML = "";
     let i = 0;
     clearInterval(typingInterval);
     
-    // Preparar variables globales para poder saltar la animación
     currentTypingElement = element;
     currentTypingContent = htmlContent;
     currentSkipButton = document.getElementById(isAnniversary ? 'skip-typing-anniversary' : 'skip-typing');
@@ -209,8 +234,12 @@ function typeWriter(element, htmlContent, container, isAnniversary = false) {
             if (htmlContent.charAt(i) === "<") i = htmlContent.indexOf(">", i) + 1;
             else if (htmlContent.charAt(i) === "&") i = htmlContent.indexOf(";", i) + 1;
             else i++;
+            
+            // Protección de fallos al saltar etiquetas html
+            if(i <= 0 || i > htmlContent.length) { i = htmlContent.length; } 
+
             element.innerHTML = htmlContent.slice(0, i) + '<span class="typing-cursor"></span>';
-            container.scrollTop = container.scrollHeight;
+            if (container) container.scrollTop = container.scrollHeight;
         } else {
             element.innerHTML = htmlContent;
             clearInterval(typingInterval);
@@ -219,7 +248,6 @@ function typeWriter(element, htmlContent, container, isAnniversary = false) {
     }, 57); 
 }
 
-// Función global para saltar la escritura
 function skipTyping() {
     if (currentTypingElement && currentTypingContent) {
         clearInterval(typingInterval);
@@ -227,10 +255,11 @@ function skipTyping() {
         if (currentSkipButton) currentSkipButton.style.display = 'none';
     }
 }
-document.getElementById('skip-typing').addEventListener('click', skipTyping);
-document.getElementById('skip-typing-anniversary').addEventListener('click', skipTyping);
+const skipBtn = document.getElementById('skip-typing');
+if (skipBtn) skipBtn.addEventListener('click', skipTyping);
+const skipAnniBtn = document.getElementById('skip-typing-anniversary');
+if (skipAnniBtn) skipAnniBtn.addEventListener('click', skipTyping);
 
-// Para la "Carta Para Ti"
 function updateLetterPage() {
     const pages = document.querySelectorAll('#letter-modal .letter-page');
     const title = document.getElementById('modal-title');
@@ -238,21 +267,24 @@ function updateLetterPage() {
     const nextBtn = document.getElementById('next-page');
     const container = document.getElementById('letter-text');
 
+    if (!pages.length) return;
+
     pages.forEach((p, idx) => p.classList.toggle('active', idx === currentPageIdx));
     
-    // Títulos dinámicos según la página
-    if(currentPageIdx === 0) title.innerText = "Unas Palabras Solo Para Ti...";
-    else if(currentPageIdx === 1) title.innerText = "Nuestro Primer Mes ❤️";
-    else if(currentPageIdx === 2) title.innerText = "Dos Meses de Amor 💞";
-    else if(currentPageIdx === 3) title.innerText = "Tres Meses Juntos ✨";
-    else if(currentPageIdx === 4) title.innerText = "Cuatro Meses de Felicidad 💖";
-    else if(currentPageIdx === 5) title.innerText = "Cinco Meses Juntitos 💖";
-    else if(currentPageIdx === 6) title.innerText = "Seis Meses Inolvidables 💍";
-    else if(currentPageIdx === 7) title.innerText = "Siete Meses de Magia ✨";
-    else if(currentPageIdx === 8) title.innerText = "Ocho Meses Contigo 💖";
+    if (title) {
+        if(currentPageIdx === 0) title.innerText = "Unas Palabras Solo Para Ti...";
+        else if(currentPageIdx === 1) title.innerText = "Nuestro Primer Mes ❤️";
+        else if(currentPageIdx === 2) title.innerText = "Dos Meses de Amor 💞";
+        else if(currentPageIdx === 3) title.innerText = "Tres Meses Juntos ✨";
+        else if(currentPageIdx === 4) title.innerText = "Cuatro Meses de Felicidad 💖";
+        else if(currentPageIdx === 5) title.innerText = "Cinco Meses Juntitos 💖";
+        else if(currentPageIdx === 6) title.innerText = "Seis Meses Inolvidables 💍";
+        else if(currentPageIdx === 7) title.innerText = "Siete Meses de Magia ✨";
+        else if(currentPageIdx === 8) title.innerText = "Ocho Meses Contigo 💖";
+    }
 
-    prevBtn.style.display = (currentPageIdx === 0) ? 'none' : 'inline-block';
-    nextBtn.style.display = (currentPageIdx === pages.length - 1) ? 'none' : 'inline-block';
+    if (prevBtn) prevBtn.style.display = (currentPageIdx === 0) ? 'none' : 'inline-block';
+    if (nextBtn) nextBtn.style.display = (currentPageIdx === pages.length - 1) ? 'none' : 'inline-block';
 
     const activePage = pages[currentPageIdx];
     const originalHTML = activePage.getAttribute('data-original') || activePage.innerHTML;
@@ -261,44 +293,67 @@ function updateLetterPage() {
     typeWriter(activePage, originalHTML, container, false);
 }
 
-document.getElementById('letter-button').addEventListener('click', () => {
-    if (!audio.paused) { mainMusicPlaying = true; audio.pause(); }
-    currentPageIdx = 0;
-    isAnniversaryActive = false;
-    document.body.classList.add('modal-open');
-    document.getElementById('letter-modal').classList.add('visible');
-    letterAudio.src = 'canciones-carta/A_Thousand_Years.mp3';
-    letterAudio.loop = true;
-    letterAudio.play().catch(e => console.log(e));
-    updateLetterPage();
-});
+const letterBtn = document.getElementById('letter-button');
+if (letterBtn) {
+    letterBtn.addEventListener('click', () => {
+        if (audio && !audio.paused) { mainMusicPlaying = true; audio.pause(); }
+        currentPageIdx = 0;
+        isAnniversaryActive = false;
+        document.body.classList.add('modal-open');
+        const modal = document.getElementById('letter-modal');
+        if (modal) modal.classList.add('visible');
+        if (letterAudio) {
+            letterAudio.src = 'canciones-carta/A_Thousand_Years.mp3';
+            letterAudio.loop = true;
+            letterAudio.play().catch(e => console.log(e));
+        }
+        updateLetterPage();
+    });
+}
 
-document.getElementById('anniversary-button').addEventListener('click', () => {
-    if (!audio.paused) { mainMusicPlaying = true; audio.pause(); }
-    isAnniversaryActive = true;
-    currentAnniversaryIdx = 0;
-    const modal = document.getElementById('anniversary-modal');
-    const container = document.getElementById('anniversary-text');
-    const page = modal.querySelector('.anniversary-page');
-    
-    document.body.classList.add('modal-open');
-    modal.classList.add('visible');
-    letterAudio.src = anniversaryPlaylist[0];
-    letterAudio.loop = false;
-    letterAudio.play().catch(e => console.log(e));
-    
-    const originalHTML = page.getAttribute('data-original') || page.innerHTML;
-    if (!page.getAttribute('data-original')) page.setAttribute('data-original', originalHTML);
-    setTimeout(() => typeWriter(page, originalHTML, container, true), 600);
-});
+const anniBtn = document.getElementById('anniversary-button');
+if (anniBtn) {
+    anniBtn.addEventListener('click', () => {
+        if (audio && !audio.paused) { mainMusicPlaying = true; audio.pause(); }
+        isAnniversaryActive = true;
+        currentAnniversaryIdx = 0;
+        const modal = document.getElementById('anniversary-modal');
+        const container = document.getElementById('anniversary-text');
+        
+        if (modal) {
+            document.body.classList.add('modal-open');
+            modal.classList.add('visible');
+            const page = modal.querySelector('.anniversary-page');
+            
+            if (letterAudio) {
+                letterAudio.src = anniversaryPlaylist[0];
+                letterAudio.loop = false;
+                letterAudio.play().catch(e => console.log(e));
+            }
+            
+            if (page) {
+                const originalHTML = page.getAttribute('data-original') || page.innerHTML;
+                if (!page.getAttribute('data-original')) page.setAttribute('data-original', originalHTML);
+                setTimeout(() => typeWriter(page, originalHTML, container, true), 600);
+            }
+        }
+    });
+}
 
-document.getElementById('next-page').addEventListener('click', () => { 
-    const pagesCount = document.querySelectorAll('#letter-modal .letter-page').length;
-    if(currentPageIdx < pagesCount - 1) { currentPageIdx++; updateLetterPage(); }
-});
-document.getElementById('prev-page').addEventListener('click', () => { 
-    if(currentPageIdx > 0) { currentPageIdx--; updateLetterPage(); }
-});
+const nextPageBtn = document.getElementById('next-page');
+if (nextPageBtn) {
+    nextPageBtn.addEventListener('click', () => { 
+        const pagesCount = document.querySelectorAll('#letter-modal .letter-page').length;
+        if(currentPageIdx < pagesCount - 1) { currentPageIdx++; updateLetterPage(); }
+    });
+}
+
+const prevPageBtn = document.getElementById('prev-page');
+if (prevPageBtn) {
+    prevPageBtn.addEventListener('click', () => { 
+        if(currentPageIdx > 0) { currentPageIdx--; updateLetterPage(); }
+    });
+}
 
 function closeAllLetters() {
     clearInterval(typingInterval);
@@ -306,27 +361,29 @@ function closeAllLetters() {
         if(m.id !== 'gallery-modal') m.classList.remove('visible');
     });
     document.body.classList.remove('modal-open');
-    letterAudio.pause();
+    if (letterAudio) letterAudio.pause();
     isAnniversaryActive = false;
-    if (mainMusicPlaying) { audio.play(); mainMusicPlaying = false; }
+    if (mainMusicPlaying && audio) { audio.play(); mainMusicPlaying = false; }
 }
 
 document.querySelectorAll('.close-letter-button').forEach(btn => btn.addEventListener('click', closeAllLetters));
 
-letterAudio.addEventListener('ended', () => {
-    if (isAnniversaryActive) {
-        currentAnniversaryIdx = (currentAnniversaryIdx + 1) % anniversaryPlaylist.length;
-        letterAudio.src = anniversaryPlaylist[currentAnniversaryIdx];
-        letterAudio.play();
-    }
-});
+if (letterAudio) {
+    letterAudio.addEventListener('ended', () => {
+        if (isAnniversaryActive) {
+            currentAnniversaryIdx = (currentAnniversaryIdx + 1) % anniversaryPlaylist.length;
+            letterAudio.src = anniversaryPlaylist[currentAnniversaryIdx];
+            letterAudio.play().catch(e=>console.log(e));
+        }
+    });
+}
 
 // --- EFECTO CLIC OPTIMIZADO (Throttle de 300ms) ---
 let lastClickTime = 0;
 document.addEventListener('mousedown', (e) => {
     if (e.target.tagName === 'BUTTON') {
         const now = Date.now();
-        if (now - lastClickTime < 300) return; // Evita spamear corazones
+        if (now - lastClickTime < 300) return; 
         lastClickTime = now;
 
         const heartEmojis = ['❤️', '💖', '✨', '🥰', '💕', '💗', '🌸'];
