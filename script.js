@@ -6,7 +6,6 @@ window.addEventListener('load', () => {
     generateHearts();
     preloadGalleryImages(); 
 
-    // Mensaje de bienvenida personalizado si ya ha visitado la página
     const messageEl = document.getElementById('message');
     if (localStorage.getItem('visited')) {
         messageEl.innerText = "Bienvenida de nuevo, mi hermosa princesa 💖 Toca el botón para continuar.";
@@ -139,11 +138,10 @@ setInterval(() => { calculateTimeDiff(startDateLucky, 'countdown'); calculateTim
 let shootingStarInterval;
 function createShootingStar() {
     const containers = document.querySelectorAll('.modal.visible .shooting-stars-container');
-    if (containers.length === 0) return; // Solo crear si hay un modal abierto
+    if (containers.length === 0) return;
 
     const star = document.createElement('div');
     star.classList.add('shooting-star');
-    // Posición aleatoria arriba o a la derecha
     star.style.top = `${Math.random() * 50}%`;
     star.style.left = `${Math.random() * 80 + 20}%`;
     
@@ -154,7 +152,6 @@ function createShootingStar() {
 function startShootingStars() {
     if (shootingStarInterval) clearInterval(shootingStarInterval);
     shootingStarInterval = setInterval(() => {
-        // 30% de probabilidad de que salga una estrella cada 3 segundos
         if (Math.random() > 0.7) createShootingStar(); 
     }, 3000);
 }
@@ -165,7 +162,6 @@ function stopShootingStars() {
 // --- GALERÍA AUTO ---
 const galleryModal = document.getElementById('gallery-modal');
 const galleryImage = document.getElementById('gallery-image');
-// Asumiendo que eventualmente las cambiarás a .webp, aquí usamos tu ruta actual.
 const images = Array.from({length: 28}, (_, i) => `Fotos_juntos/Foto${i+1}.jpg`);
 let currentImgIdx = 0;
 let galInterval;
@@ -221,7 +217,6 @@ let currentHtmlContent = "";
 let currentContainer = null;
 let currentElement = null;
 
-// GESTIÓN DE PLAYLIST DE ANIVERSARIO
 const anniversaryPlaylist = [
     "Música_aniversario/Punaladas.mp3", 
     "Música_aniversario/I_Wouldn't_Mind_by_He_Is_We.mp3", 
@@ -248,6 +243,7 @@ function typeWriter(element, htmlContent, container, skipBtn) {
             else if (htmlContent.charAt(i) === "&") i = htmlContent.indexOf(";", i) + 1;
             else i++;
             element.innerHTML = htmlContent.slice(0, i) + '<span class="typing-cursor"></span>';
+            // Suavizamos el scroll para que no provoque saltos de pantalla en móviles
             container.scrollTop = container.scrollHeight;
         } else {
             element.innerHTML = htmlContent;
@@ -267,11 +263,9 @@ function skipTyping() {
     }
 }
 
-// Botones de salto
 document.getElementById('skip-typing-button').addEventListener('click', skipTyping);
 document.getElementById('skip-anniversary-btn').addEventListener('click', skipTyping);
 
-// Carta Para Ti Dinámica
 function updateLetterPage(withFade = false) {
     const pages = document.querySelectorAll('#letter-modal .letter-page');
     const title = document.getElementById('modal-title');
@@ -284,7 +278,6 @@ function updateLetterPage(withFade = false) {
     const updateContent = () => {
         pages.forEach((p, idx) => p.classList.toggle('active', idx === currentPageIdx));
         
-        // Títulos dinámicos
         if(currentPageIdx === 0) title.innerText = "Unas Palabras Solo Para Ti...";
         else if(currentPageIdx === 1) title.innerText = "Nuestro Primer Mes ❤️";
         else if(currentPageIdx === 2) title.innerText = "Dos Meses de Amor 💞";
@@ -309,7 +302,7 @@ function updateLetterPage(withFade = false) {
     if (withFade) {
         contentBox.classList.add('fade-out');
         clearInterval(typingInterval);
-        setTimeout(updateContent, 400); // Esperar a que haga fade-out para cambiar texto
+        setTimeout(updateContent, 400);
     } else {
         updateContent();
     }
@@ -324,7 +317,7 @@ document.getElementById('letter-button').addEventListener('click', () => {
     letterAudio.loop = true;
     letterAudio.play().catch(e => console.log(e));
     updateLetterPage(false);
-    startShootingStars(); // Iniciar estrellas
+    startShootingStars();
 });
 
 document.getElementById('anniversary-button').addEventListener('click', () => {
@@ -351,7 +344,7 @@ document.getElementById('anniversary-button').addEventListener('click', () => {
 document.getElementById('next-page').addEventListener('click', () => { 
     const pagesCount = document.querySelectorAll('#letter-modal .letter-page').length;
     if(currentPageIdx < pagesCount - 1) { 
-        if(isTyping) skipTyping(); // Si estaba escribiendo, completarlo primero no dañar el fade
+        if(isTyping) skipTyping();
         currentPageIdx++; 
         updateLetterPage(true); 
     }
@@ -374,7 +367,6 @@ function closeAllLetters() {
     isAnniversaryActive = false;
     stopShootingStars();
     if (mainMusicPlaying) { 
-        // Restaurar música principal con un pequeño fade
         audio.volume = 0;
         audio.play(); 
         let vol = 0;
