@@ -1,23 +1,17 @@
-// --- CARGA INICIAL Y PERSISTENCIA (LocalStorage) ---
+// --- CARGA INICIAL ---
 window.addEventListener('load', () => {
     const preloader = document.getElementById('preloader');
     preloader.classList.add('fade-out');
     setTimeout(() => { preloader.style.display = 'none'; }, 800);
     generateHearts();
-    preloadGalleryImages(); 
-
-    const messageEl = document.getElementById('message');
-    if (localStorage.getItem('visited')) {
-        messageEl.innerText = "Bienvenida de nuevo, mi hermosa princesa 💖 Toca el botón para continuar.";
-    } else {
-        localStorage.setItem('visited', 'true');
-    }
+    preloadGalleryImagesInit(); // Solo precarga unas pocas al inicio
 });
 
 function generateHearts() {
     const heartsContainer = document.querySelector('.hearts-container');
     const heartEmojis = ['❤️', '💖', '✨', '🥰', '💕'];
-    for (let i = 0; i < 40; i++) {
+    const numHearts = 40;
+    for (let i = 0; i < numHearts; i++) {
         const heart = document.createElement('div');
         heart.classList.add('heart-emoji');
         heart.innerText = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
@@ -29,7 +23,7 @@ function generateHearts() {
     }
 }
 
-// --- REPRODUCTOR (Con Fade-In) ---
+// --- REPRODUCTOR ---
 const audio = document.getElementById('background-music');
 const prevSongButton = document.getElementById('prev-song-button');
 const nextSongButton = document.getElementById('next-song-button');
@@ -40,30 +34,12 @@ const songFiles = ['audio/Those_Eyes.mp3', 'audio/cancion_para_nicol.mp3', 'audi
 const songDisplayNames = ["Those Eyes", "Canción para Nicol", "Cristina - Sebastián Yatra", "Por Amarte Así - Cristian Castro", "Dandelions - Ruth B.", "No Hay Nadie Más - Sebastián Yatra"];
 let currentSongIndex = 0;
 let musicStarted = false;
-let maxVolume = 0.8; 
 
-function loadSong(songIndex, withFade = false) {
+function loadSong(songIndex) {
     audio.src = songFiles[songIndex];
     songNameDisplay.innerText = `Sonando: ${songDisplayNames[songIndex]}`;
-    
-    if (withFade) {
-        audio.volume = 0;
-        audio.play().catch(e => console.log("Play error"));
-        let vol = 0;
-        const fadeInterval = setInterval(() => {
-            if (vol < maxVolume) {
-                vol += 0.05;
-                audio.volume = Math.min(vol, maxVolume);
-            } else {
-                clearInterval(fadeInterval);
-            }
-        }, 200);
-    } else {
-        audio.volume = maxVolume;
-        audio.play().catch(e => console.log("Play error"));
-    }
+    audio.play().catch(e => console.log("Play"));
 }
-
 function playPauseSong() { if (audio.paused) audio.play(); else audio.pause(); }
 function nextSong() { currentSongIndex = (currentSongIndex + 1) % songFiles.length; loadSong(currentSongIndex); }
 function prevSong() { currentSongIndex = (currentSongIndex - 1 + songFiles.length) % songFiles.length; loadSong(currentSongIndex); }
@@ -72,10 +48,7 @@ prevSongButton.addEventListener('click', prevSong);
 nextSongButton.addEventListener('click', nextSong);
 playPauseButton.addEventListener('click', playPauseSong);
 audio.addEventListener('ended', nextSong);
-volumeSlider.addEventListener('input', (e) => {
-    maxVolume = e.target.value; 
-    audio.volume = maxVolume;
-});
+volumeSlider.addEventListener('input', (e) => audio.volume = e.target.value);
 audio.onplay = () => playPauseButton.innerText = "⏸️ Pausa";
 audio.onpause = () => playPauseButton.innerText = "▶️ Play";
 
@@ -101,7 +74,7 @@ function showNextMessage() {
 }
 
 messageButton.addEventListener('click', () => {
-    if (!musicStarted) { loadSong(currentSongIndex, true); musicStarted = true; document.querySelectorAll('.music-button, .volume-control').forEach(el => el.classList.add('visible')); }
+    if (!musicStarted) { loadSong(currentSongIndex); musicStarted = true; document.querySelectorAll('.music-button, .volume-control').forEach(el => el.classList.add('visible')); }
     if (isFirstClick) { messageButton.innerHTML = "Siguiente mensaje 💕"; isFirstClick = false; }
     showNextMessage();
 });
@@ -134,15 +107,49 @@ function calculateTimeDiff(startDate, elementId) {
 
 setInterval(() => { calculateTimeDiff(startDateLucky, 'countdown'); calculateTimeDiff(startDateCouple, 'countdown-pareja'); }, 1000);
 
+// --- LÓGICA DE CARTAS (TYPING) Y VARIABLES GLOBALES ---
+const letterAudio = document.getElementById('letter-music');
+const galleryAudio = document.getElementById('gallery-music');
+let mainMusicPlaying = false;
+
+let typingInterval;
+let currentTypingElement = null;
+let currentTypingContent = "";
+let currentSkipButton = null;
+
+// GESTIÓN DE PLAYLIST DE ANIVERSARIO
+const anniversaryPlaylist = [
+    "Música_aniversario/Punaladas.mp3", 
+    "Música_aniversario/I_Wouldn't_Mind_by_He_Is_We.mp3", 
+    "Música_aniversario/Magia.mp3"
+];
+let currentAnniversaryIdx = 0;
+let isAnniversaryActive = false;
+let currentPageIdx = 0;
+
 // --- GALERÍA AUTO ---
 const galleryModal = document.getElementById('gallery-modal');
 const galleryImage = document.getElementById('gallery-image');
 const images = Array.from({length: 28}, (_, i) => `Fotos_juntos/Foto${i+1}.jpg`);
 let currentImgIdx = 0;
 let galInterval;
+let fullGalleryLoaded = false;
 
-function preloadGalleryImages() {
-    images.forEach(src => { const img = new Image(); img.src = src; });
+// Precarga progresiva (solo 3 imágenes al cargar la web)
+function preloadGalleryImagesInit() {
+    for(let i=0; i<3 && i<images.length; i++) {
+        const img = new Image();
+        img.src = images[i];
+    }
+}
+// Carga el resto solo cuando se abre la galería
+function preloadRemainingGalleryImages() {
+    if(fullGalleryLoaded) return;
+    for(let i=3; i<images.length; i++) {
+        const img = new Image();
+        img.src = images[i];
+    }
+    fullGalleryLoaded = true;
 }
 
 function showImg(idx) {
@@ -156,16 +163,19 @@ function showImg(idx) {
 }
 
 document.getElementById('gallery-button').addEventListener('click', () => {
+    preloadRemainingGalleryImages();
     if (!audio.paused) { mainMusicPlaying = true; audio.pause(); }
     galleryAudio.currentTime = 0;
     galleryAudio.play().catch(e => console.log("Error al reproducir música en galería"));
     showImg(currentImgIdx);
+    document.body.classList.add('modal-open');
     galleryModal.classList.add('visible');
     galInterval = setInterval(() => showImg(currentImgIdx + 1), 4000);
 });
 
 document.querySelector('#gallery-modal .close-button').addEventListener('click', () => {
     galleryModal.classList.remove('visible');
+    document.body.classList.remove('modal-open');
     clearInterval(galInterval);
     galleryAudio.pause();
     if (mainMusicPlaying) { audio.play(); mainMusicPlaying = false; }
@@ -174,7 +184,7 @@ document.querySelector('#gallery-modal .close-button').addEventListener('click',
 document.querySelector('.prev').addEventListener('click', () => {
     clearInterval(galInterval); 
     showImg(currentImgIdx - 1);
-    galInterval = setInterval(() => showImg(currentImgIdx + 1), 4000); 
+    galInterval = setInterval(() => showImg(currentImgIdx + 1), 4000);
 });
 document.querySelector('.next').addEventListener('click', () => {
     clearInterval(galInterval);
@@ -182,35 +192,17 @@ document.querySelector('.next').addEventListener('click', () => {
     galInterval = setInterval(() => showImg(currentImgIdx + 1), 4000);
 });
 
-// --- LÓGICA DE CARTAS (TYPING Y SKIP) ---
-const letterAudio = document.getElementById('letter-music');
-const galleryAudio = document.getElementById('gallery-music');
-let mainMusicPlaying = false;
-let typingInterval;
-let isTyping = false;
-let currentHtmlContent = "";
-let currentContainer = null;
-let currentElement = null;
-
-const anniversaryPlaylist = [
-    "Música_aniversario/Punaladas.mp3", 
-    "Música_aniversario/I_Wouldn't_Mind_by_He_Is_We.mp3", 
-    "Música_aniversario/Magia.mp3"
-];
-let currentAnniversaryIdx = 0;
-let isAnniversaryActive = false;
-let currentPageIdx = 0;
-
-function typeWriter(element, htmlContent, container, skipBtn) {
+function typeWriter(element, htmlContent, container, isAnniversary = false) {
     element.innerHTML = "";
     let i = 0;
     clearInterval(typingInterval);
-    isTyping = true;
-    currentHtmlContent = htmlContent;
-    currentElement = element;
-    currentContainer = container;
     
-    if(skipBtn) skipBtn.style.display = 'inline-block';
+    // Preparar variables globales para poder saltar la animación
+    currentTypingElement = element;
+    currentTypingContent = htmlContent;
+    currentSkipButton = document.getElementById(isAnniversary ? 'skip-typing-anniversary' : 'skip-typing');
+    
+    if (currentSkipButton) currentSkipButton.style.display = 'inline-block';
 
     typingInterval = setInterval(() => {
         if (i < htmlContent.length) {
@@ -221,35 +213,34 @@ function typeWriter(element, htmlContent, container, skipBtn) {
             container.scrollTop = container.scrollHeight;
         } else {
             element.innerHTML = htmlContent;
-            isTyping = false;
             clearInterval(typingInterval);
-            if(skipBtn) skipBtn.style.display = 'none';
+            if (currentSkipButton) currentSkipButton.style.display = 'none';
         }
     }, 57); 
 }
 
+// Función global para saltar la escritura
 function skipTyping() {
-    if (isTyping && currentElement) {
+    if (currentTypingElement && currentTypingContent) {
         clearInterval(typingInterval);
-        currentElement.innerHTML = currentHtmlContent;
-        isTyping = false;
-        document.querySelectorAll('.skip-btn').forEach(btn => btn.style.display = 'none');
+        currentTypingElement.innerHTML = currentTypingContent;
+        if (currentSkipButton) currentSkipButton.style.display = 'none';
     }
 }
+document.getElementById('skip-typing').addEventListener('click', skipTyping);
+document.getElementById('skip-typing-anniversary').addEventListener('click', skipTyping);
 
-document.getElementById('skip-typing-button').addEventListener('click', skipTyping);
-document.getElementById('skip-anniversary-btn').addEventListener('click', skipTyping);
-
+// Para la "Carta Para Ti"
 function updateLetterPage() {
     const pages = document.querySelectorAll('#letter-modal .letter-page');
     const title = document.getElementById('modal-title');
     const prevBtn = document.getElementById('prev-page');
     const nextBtn = document.getElementById('next-page');
     const container = document.getElementById('letter-text');
-    const skipBtn = document.getElementById('skip-typing-button');
 
     pages.forEach((p, idx) => p.classList.toggle('active', idx === currentPageIdx));
     
+    // Títulos dinámicos según la página
     if(currentPageIdx === 0) title.innerText = "Unas Palabras Solo Para Ti...";
     else if(currentPageIdx === 1) title.innerText = "Nuestro Primer Mes ❤️";
     else if(currentPageIdx === 2) title.innerText = "Dos Meses de Amor 💞";
@@ -267,13 +258,14 @@ function updateLetterPage() {
     const originalHTML = activePage.getAttribute('data-original') || activePage.innerHTML;
     if (!activePage.getAttribute('data-original')) activePage.setAttribute('data-original', originalHTML);
     
-    typeWriter(activePage, originalHTML, container, skipBtn);
+    typeWriter(activePage, originalHTML, container, false);
 }
 
 document.getElementById('letter-button').addEventListener('click', () => {
     if (!audio.paused) { mainMusicPlaying = true; audio.pause(); }
     currentPageIdx = 0;
     isAnniversaryActive = false;
+    document.body.classList.add('modal-open');
     document.getElementById('letter-modal').classList.add('visible');
     letterAudio.src = 'canciones-carta/A_Thousand_Years.mp3';
     letterAudio.loop = true;
@@ -288,8 +280,8 @@ document.getElementById('anniversary-button').addEventListener('click', () => {
     const modal = document.getElementById('anniversary-modal');
     const container = document.getElementById('anniversary-text');
     const page = modal.querySelector('.anniversary-page');
-    const skipBtn = document.getElementById('skip-anniversary-btn');
     
+    document.body.classList.add('modal-open');
     modal.classList.add('visible');
     letterAudio.src = anniversaryPlaylist[0];
     letterAudio.loop = false;
@@ -297,48 +289,26 @@ document.getElementById('anniversary-button').addEventListener('click', () => {
     
     const originalHTML = page.getAttribute('data-original') || page.innerHTML;
     if (!page.getAttribute('data-original')) page.setAttribute('data-original', originalHTML);
-    
-    typeWriter(page, originalHTML, container, skipBtn);
+    setTimeout(() => typeWriter(page, originalHTML, container, true), 600);
 });
 
 document.getElementById('next-page').addEventListener('click', () => { 
     const pagesCount = document.querySelectorAll('#letter-modal .letter-page').length;
-    if(currentPageIdx < pagesCount - 1) { 
-        if(isTyping) skipTyping();
-        currentPageIdx++; 
-        updateLetterPage(); 
-    }
+    if(currentPageIdx < pagesCount - 1) { currentPageIdx++; updateLetterPage(); }
 });
 document.getElementById('prev-page').addEventListener('click', () => { 
-    if(currentPageIdx > 0) { 
-        if(isTyping) skipTyping();
-        currentPageIdx--; 
-        updateLetterPage(); 
-    }
+    if(currentPageIdx > 0) { currentPageIdx--; updateLetterPage(); }
 });
 
 function closeAllLetters() {
     clearInterval(typingInterval);
-    document.querySelectorAll('.skip-btn').forEach(btn => btn.style.display = 'none');
     document.querySelectorAll('.modal').forEach(m => {
         if(m.id !== 'gallery-modal') m.classList.remove('visible');
     });
+    document.body.classList.remove('modal-open');
     letterAudio.pause();
     isAnniversaryActive = false;
-    if (mainMusicPlaying) { 
-        audio.volume = 0;
-        audio.play(); 
-        let vol = 0;
-        const resInterval = setInterval(() => {
-            if (vol < maxVolume) {
-                vol += 0.05;
-                audio.volume = Math.min(vol, maxVolume);
-            } else {
-                clearInterval(resInterval);
-            }
-        }, 150);
-        mainMusicPlaying = false; 
-    }
+    if (mainMusicPlaying) { audio.play(); mainMusicPlaying = false; }
 }
 
 document.querySelectorAll('.close-letter-button').forEach(btn => btn.addEventListener('click', closeAllLetters));
@@ -351,9 +321,14 @@ letterAudio.addEventListener('ended', () => {
     }
 });
 
-// --- EFECTO CLIC ---
+// --- EFECTO CLIC OPTIMIZADO (Throttle de 300ms) ---
+let lastClickTime = 0;
 document.addEventListener('mousedown', (e) => {
     if (e.target.tagName === 'BUTTON') {
+        const now = Date.now();
+        if (now - lastClickTime < 300) return; // Evita spamear corazones
+        lastClickTime = now;
+
         const heartEmojis = ['❤️', '💖', '✨', '🥰', '💕', '💗', '🌸'];
         const amount = 18; 
         for (let i = 0; i < amount; i++) {
