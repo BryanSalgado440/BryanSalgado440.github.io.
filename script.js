@@ -4,6 +4,7 @@ window.addEventListener('load', () => {
     preloader.classList.add('fade-out');
     setTimeout(() => { preloader.style.display = 'none'; }, 800);
     generateHearts();
+    preloadGalleryImages(); // Novedad: Iniciar precarga de imágenes al cargar la página
 });
 
 function generateHearts() {
@@ -129,11 +130,22 @@ const images = Array.from({length: 28}, (_, i) => `Fotos_juntos/Foto${i+1}.jpg`)
 let currentImgIdx = 0;
 let galInterval;
 
+// Novedad: Función para precargar imágenes en caché
+function preloadGalleryImages() {
+    images.forEach(src => {
+        const img = new Image();
+        img.src = src;
+    });
+}
+
 function showImg(idx) {
     if (idx >= images.length) idx = 0; if (idx < 0) idx = images.length - 1;
     currentImgIdx = idx;
     galleryImage.style.opacity = '0';
-    setTimeout(() => { galleryImage.src = images[currentImgIdx]; galleryImage.style.opacity = '1'; }, 400);
+    setTimeout(() => { 
+        galleryImage.src = images[currentImgIdx]; 
+        galleryImage.style.opacity = '1'; 
+    }, 400);
 }
 
 document.getElementById('gallery-button').addEventListener('click', () => {
@@ -152,8 +164,16 @@ document.querySelector('#gallery-modal .close-button').addEventListener('click',
     if (mainMusicPlaying) { audio.play(); mainMusicPlaying = false; }
 });
 
-document.querySelector('.prev').addEventListener('click', () => showImg(currentImgIdx - 1));
-document.querySelector('.next').addEventListener('click', () => showImg(currentImgIdx + 1));
+document.querySelector('.prev').addEventListener('click', () => {
+    clearInterval(galInterval); // Opcional: pausar autoplay al cambiar manual
+    showImg(currentImgIdx - 1);
+    galInterval = setInterval(() => showImg(currentImgIdx + 1), 4000); // Reiniciar timer
+});
+document.querySelector('.next').addEventListener('click', () => {
+    clearInterval(galInterval);
+    showImg(currentImgIdx + 1);
+    galInterval = setInterval(() => showImg(currentImgIdx + 1), 4000);
+});
 
 function typeWriter(element, htmlContent, container) {
     element.innerHTML = "";
@@ -173,7 +193,7 @@ function typeWriter(element, htmlContent, container) {
     }, 57); 
 }
 
-// Para la "Carta Para Ti" (Dinámica - Adaptada para 7 páginas)
+// Para la "Carta Para Ti"
 function updateLetterPage() {
     const pages = document.querySelectorAll('#letter-modal .letter-page');
     const title = document.getElementById('modal-title');
@@ -191,6 +211,8 @@ function updateLetterPage() {
     else if(currentPageIdx === 4) title.innerText = "Cuatro Meses de Felicidad 💖";
     else if(currentPageIdx === 5) title.innerText = "Cinco Meses Juntitos 💖";
     else if(currentPageIdx === 6) title.innerText = "Seis Meses Inolvidables 💍";
+    else if(currentPageIdx === 7) title.innerText = "Siete Meses de Magia ✨";
+    else if(currentPageIdx === 8) title.innerText = "Ocho Meses Contigo 💖";
 
     prevBtn.style.display = (currentPageIdx === 0) ? 'none' : 'inline-block';
     nextBtn.style.display = (currentPageIdx === pages.length - 1) ? 'none' : 'inline-block';
