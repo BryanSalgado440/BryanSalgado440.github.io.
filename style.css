@@ -1,6 +1,10 @@
 /* --- Fuentes y estilos globales --- */
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@700&family=Quicksand:wght@400;600&display=swap');
 
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Quicksand', sans-serif;
     margin: 0; padding: 20px; display: flex;
@@ -8,7 +12,7 @@ body {
     text-align: center;
     background: linear-gradient(315deg, #ffdde1, #ee9ca7, #ffdde1, #ee9ca7);
     background-size: 400% 400%; animation: gradientAnimation 15s ease infinite;
-    box-sizing: border-box;
+    overflow-x: hidden;
 }
 @keyframes gradientAnimation { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
@@ -19,14 +23,13 @@ body {
 
 .hearts-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden; }
 
-/* OPTIMIZACIÓN: Aceleración por hardware para la animación floatUp */
-.heart-emoji { position: absolute; bottom: -50px; font-size: 30px; color: #ff80ab; animation: floatUp 10s infinite linear; }
+.heart-emoji { position: absolute; bottom: -50px; font-size: 30px; color: #ff80ab; animation: floatUp 10s infinite linear; will-change: transform, opacity; }
 @keyframes floatUp { to { transform: translateY(-110vh) rotate(360deg); opacity: 0; } }
 
-.click-heart { position: absolute; pointer-events: none; z-index: 9999; font-size: 24px; animation: burstHeart 0.8s ease-out forwards; }
+.click-heart { position: absolute; pointer-events: none; z-index: 9999; font-size: 24px; animation: burstHeart 0.8s ease-out forwards; will-change: transform, opacity; }
 @keyframes burstHeart { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; } 100% { transform: translate(var(--x-move), var(--y-move)) scale(1.5) rotate(var(--rotation)); opacity: 0; } }
 
-.container { background: rgba(255, 255, 255, 0.95); padding: 30px 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); max-width: 650px; width: 100%; position: relative; z-index: 1; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px; margin: 20px 0; }
+.container { background: rgba(255, 255, 255, 0.95); padding: 30px 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); max-width: 650px; width: 100%; position: relative; z-index: 1; display: flex; flex-direction: column; gap: 15px; margin: 20px 0; }
 h1 { font-family: 'Dancing Script', cursive; color: #c83b50; font-size: 3em; margin: 0 0 10px 0; display: flex; justify-content: center; align-items: center; }
 .heart { color: #e74c3c; font-size: 0.8em; margin: 0 15px; animation: beat 1.5s infinite ease-in-out; }
 @keyframes beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
@@ -64,6 +67,7 @@ p#message { font-size: 1.25em; color: #444; font-weight: 600; line-height: 1.6; 
 #anniversary-button { background: #e1bee7; color: #7b1fa2; }
 #anniversary-button:hover { background: #d1c4e9; transform: translateY(-2px); }
 
+/* MODAL GENERAL CORREGIDO PARA MÓVILES */
 .modal { display: flex; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; background-color: rgba(0,0,0,0.92); justify-content: center; align-items: center; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.4s ease-in-out; }
 .modal.visible { opacity: 1; visibility: visible; pointer-events: auto; }
 .modal-content { position: relative; display: flex; align-items: center; justify-content: center; width: 95vw; height: 85vh; transform: scale(0.95) translateY(20px); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -78,89 +82,77 @@ p#message { font-size: 1.25em; color: #444; font-weight: 600; line-height: 1.6; 
 .prev, .next { cursor: pointer; position: absolute; top: 50%; width: auto; margin-top: -22px; padding: 20px; color: white; font-weight: bold; font-size: 25px; transition: 0.3s; user-select: none; background-color: rgba(0,0,0,0.5); z-index: 105; border-radius: 50%; }
 .prev { left: 10px; } .next { right: 10px; }
 
-.letter-content { font-family: 'Cormorant Garamond', serif; background: #faf3e0; color: #4e342e; padding: 40px 50px; border-radius: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 800px; width: 90vw; max-height: 85vh; position: relative; text-align: left; display: flex; flex-direction: column; }
-.close-letter-button { font-family: 'Quicksand', sans-serif; position: absolute; top: 10px; right: 20px; color: #8d6e63; font-size: 35px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+/* CONTENEDOR ESTRICTO DE CARTAS PARA EVITAR DESBORDES */
+.letter-content { 
+    font-family: 'Cormorant Garamond', serif; 
+    background: #faf3e0; 
+    color: #4e342e; 
+    padding: 30px 35px; 
+    border-radius: 8px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+    max-width: 750px; 
+    width: 92vw; 
+    height: 84vh; 
+    max-height: 84vh;
+    position: relative; 
+    text-align: left; 
+    display: flex; 
+    flex-direction: column; 
+    overflow: hidden;
+}
+.close-letter-button { font-family: 'Quicksand', sans-serif; position: absolute; top: 12px; right: 20px; color: #8d6e63; font-size: 32px; font-weight: bold; cursor: pointer; transition: 0.3s; z-index: 10; }
 .close-letter-button:hover { color: #5d4037; }
-.letter-content h2 { font-family: 'Dancing Script', cursive; color: #c83b50; font-size: 2.8em; margin: 0 auto 20px auto; text-align: center; border-bottom: 2px solid rgba(200, 59, 80, 0.3); padding-bottom: 10px; }
+.letter-content h2 { font-family: 'Dancing Script', cursive; color: #c83b50; font-size: 2.4em; margin: 0 auto 15px auto; text-align: center; border-bottom: 2px solid rgba(200, 59, 80, 0.3); padding-bottom: 8px; flex-shrink: 0; }
 
-.letter-text-box, #letter-text, #anniversary-text { flex-grow: 1; overflow-y: auto; padding-right: 20px; scrollbar-width: thin; scrollbar-color: #d7ccc8 #faf3e0; scroll-behavior: smooth; }
-.letter-text-box p, #letter-text p, #anniversary-text p { display: inline-block; width: 100%; min-height: 1.2em; font-size: 1.4em; line-height: 2.4; text-decoration: underline; text-decoration-color: rgba(141, 110, 99, 0.3); text-underline-offset: 12px; text-decoration-thickness: 1.5px; margin: 0; }
-.letter-text-box p:empty, #letter-text p:empty, #anniversary-text p:empty { min-height: 1.6em; text-decoration: none; }
+/* BLOQUE DE TEXTO INTERNO CON SCROLL SEGURO */
+.letter-text-box, #letter-text, #anniversary-text { 
+    flex: 1 1 auto; 
+    min-height: 0; 
+    overflow-y: auto; 
+    padding-right: 15px; 
+    scrollbar-width: thin; 
+    scrollbar-color: #d7ccc8 #faf3e0; 
+    -webkit-overflow-scrolling: touch;
+}
+.letter-text-box p, #letter-text p, #anniversary-text p { 
+    display: inline-block; 
+    width: 100%; 
+    min-height: 1.2em; 
+    font-size: 1.35em; 
+    line-height: 2.2; 
+    text-decoration: underline; 
+    text-decoration-color: rgba(141, 110, 99, 0.3); 
+    text-underline-offset: 10px; 
+    text-decoration-thickness: 1.5px; 
+    margin: 0 0 10px 0; 
+    overflow-wrap: anywhere;
+}
+.letter-text-box p:empty, #letter-text p:empty, #anniversary-text p:empty { min-height: 1.4em; text-decoration: none; }
 .letter-text-box p::after, #letter-text p::after, #anniversary-text p::after { content: ''; display: block; }
 
 .letter-page, .anniversary-page { display: none; }
 .letter-page.active, .anniversary-page.active { display: block; }
 
-/* Navegación interna */
-.letter-controls { display: flex; justify-content: space-between; margin-top: 15px; border-top: 1px solid rgba(141, 110, 99, 0.2); padding-top: 10px; }
-.nav-btn { font-family: 'Quicksand', sans-serif; background: #ee9ca7; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600; transition: 0.3s; }
+/* Controles de carta fijos abajo */
+.letter-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; border-top: 1px solid rgba(141, 110, 99, 0.2); padding-top: 10px; flex-shrink: 0; }
+.nav-btn { font-family: 'Quicksand', sans-serif; background: #ee9ca7; color: white; border: none; padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: 600; transition: 0.3s; font-size: 0.9em; }
 .nav-btn:hover { background: #ff7eb3; transform: scale(1.05); }
 
-.typing-cursor { display: inline-block; width: 2.5px; height: 1.3em; background-color: #c83b50; margin-left: 3px; vertical-align: middle; animation: blink-cursor 0.8s infinite; }
+.typing-cursor { display: inline-block; width: 2.5px; height: 1.2em; background-color: #c83b50; margin-left: 3px; vertical-align: middle; animation: blink-cursor 0.8s infinite; }
 @keyframes blink-cursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-/* --- DISEÑO RESPONSIVO (MÓVILES Y TABLETS) --- */
-@media (max-width: 768px) {
-    body { padding: 15px 10px; align-items: flex-start; }
-    .container { padding: 25px 20px; max-width: 95%; gap: 12px; margin: 10px 0; }
-    h1 { font-size: 2.2em; }
-    .countdown-display { font-size: 1.05em; }
-    .letter-content { padding: 30px 25px; width: 92vw; }
-    .extra-buttons { flex-direction: column; align-items: center; gap: 10px; }
-    .extra-buttons button { width: 100%; max-width: 320px; }
-}
-
-@media (max-width: 480px) {
-    h1 { font-size: 1.8em; }
-    .timer-text { font-size: 0.9em; }
-    .countdown-display { font-size: 0.85em; }
-    
-    .message-box { height: 120px; padding: 10px; }
-    p#message { font-size: 1.1em; }
-    
-    #message-button { padding: 12px 20px; font-size: 0.95em; width: 100%; max-width: 300px; }
-    
-    .music-controls { flex-wrap: wrap; justify-content: center; gap: 8px; width: 100%; }
-    .music-button { padding: 8px 12px; font-size: 0.85em; flex-grow: 1; text-align: center; }
-    
-    /* Ajustes del modal de cartas para móviles */
-    .letter-content { padding: 20px 15px; height: 88vh; }
-    .close-letter-button { top: 5px; right: 15px; font-size: 32px; }
-    .letter-content h2 { font-size: 1.8em; margin-top: 15px; margin-bottom: 15px; }
-    
-    /* Escalar texto manuscrito de las cartas */
-    .letter-text-box p, #letter-text p, #anniversary-text p { 
-        font-size: 1.05em; 
-        line-height: 2.2; 
-        text-underline-offset: 8px; 
-    }
-    
-    /* Controles de paginación */
-    .letter-controls { flex-direction: row; gap: 10px; justify-content: space-between; }
-    .nav-btn { padding: 10px 15px; font-size: 0.85em; width: 48%; }
-    
-    /* Galería */
-    .prev, .next { padding: 12px; font-size: 18px; margin-top: -15px; }
-    .close-button { top: 10px; right: 15px; font-size: 35px; }
-}
-
-@media (max-width: 360px) {
-    h1 { font-size: 1.5em; }
-    .countdown-display { font-size: 0.75em; }
-    .letter-content h2 { font-size: 1.5em; }
-    .letter-text-box p, #letter-text p, #anniversary-text p { font-size: 0.95em; }
-}
-
-/* --- OPTIMIZACIONES Y NUEVOS BOTONES --- */
 body.modal-open { 
     overflow: hidden; 
+    position: fixed;
+    width: 100%;
+    height: 100%;
 }
 
 .skip-btn {
     background: #d7ccc8;
     color: #5d4037;
-    font-size: 0.85em;
-    padding: 6px 15px;
+    font-size: 0.8em;
+    padding: 6px 12px;
     display: none; 
 }
 .skip-btn:hover {
@@ -170,4 +162,23 @@ body.modal-open {
 .anniversary-controls {
     justify-content: center;
     border-top: none;
+}
+
+/* --- DISEÑO RESPONSIVO (MÓVILES) --- */
+@media (max-width: 768px) {
+    body { padding: 10px; align-items: flex-start; }
+    .container { padding: 20px 15px; max-width: 100%; }
+    h1 { font-size: 2em; }
+    .letter-content { padding: 20px 15px; width: 96vw; height: 86vh; max-height: 86vh; }
+    .extra-buttons { flex-direction: column; align-items: center; gap: 10px; }
+    .extra-buttons button { width: 100%; max-width: 100%; }
+}
+
+@media (max-width: 480px) {
+    h1 { font-size: 1.6em; }
+    .letter-content h2 { font-size: 1.5em; margin-bottom: 10px; }
+    .letter-text-box p, #letter-text p, #anniversary-text p { font-size: 1.05em; line-height: 2; }
+    .letter-controls { gap: 6px; }
+    .nav-btn { padding: 6px 12px; font-size: 0.8em; }
+    .skip-btn { padding: 6px 10px; font-size: 0.75em; }
 }
