@@ -1,17 +1,24 @@
-// --- CARGA INICIAL ---
+// --- CARGA INICIAL Y PERSISTENCIA (LocalStorage) ---
 window.addEventListener('load', () => {
     const preloader = document.getElementById('preloader');
     preloader.classList.add('fade-out');
     setTimeout(() => { preloader.style.display = 'none'; }, 800);
     generateHearts();
-    preloadGalleryImages(); // Novedad: Iniciar precarga de imágenes al cargar la página
+    preloadGalleryImages(); 
+
+    // Mensaje de bienvenida personalizado si ya ha visitado la página
+    const messageEl = document.getElementById('message');
+    if (localStorage.getItem('visited')) {
+        messageEl.innerText = "Bienvenida de nuevo, mi hermosa princesa 💖 Toca el botón para continuar.";
+    } else {
+        localStorage.setItem('visited', 'true');
+    }
 });
 
 function generateHearts() {
     const heartsContainer = document.querySelector('.hearts-container');
     const heartEmojis = ['❤️', '💖', '✨', '🥰', '💕'];
-    const numHearts = 40;
-    for (let i = 0; i < numHearts; i++) {
+    for (let i = 0; i < 40; i++) {
         const heart = document.createElement('div');
         heart.classList.add('heart-emoji');
         heart.innerText = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
@@ -23,7 +30,7 @@ function generateHearts() {
     }
 }
 
-// --- REPRODUCTOR ---
+// --- REPRODUCTOR (Con Fade-In) ---
 const audio = document.getElementById('background-music');
 const prevSongButton = document.getElementById('prev-song-button');
 const nextSongButton = document.getElementById('next-song-button');
@@ -34,12 +41,30 @@ const songFiles = ['audio/Those_Eyes.mp3', 'audio/cancion_para_nicol.mp3', 'audi
 const songDisplayNames = ["Those Eyes", "Canción para Nicol", "Cristina - Sebastián Yatra", "Por Amarte Así - Cristian Castro", "Dandelions - Ruth B.", "No Hay Nadie Más - Sebastián Yatra"];
 let currentSongIndex = 0;
 let musicStarted = false;
+let maxVolume = 0.8; 
 
-function loadSong(songIndex) {
+function loadSong(songIndex, withFade = false) {
     audio.src = songFiles[songIndex];
     songNameDisplay.innerText = `Sonando: ${songDisplayNames[songIndex]}`;
-    audio.play().catch(e => console.log("Play"));
+    
+    if (withFade) {
+        audio.volume = 0;
+        audio.play().catch(e => console.log("Play error"));
+        let vol = 0;
+        const fadeInterval = setInterval(() => {
+            if (vol < maxVolume) {
+                vol += 0.05;
+                audio.volume = Math.min(vol, maxVolume);
+            } else {
+                clearInterval(fadeInterval);
+            }
+        }, 200);
+    } else {
+        audio.volume = maxVolume;
+        audio.play().catch(e => console.log("Play error"));
+    }
 }
+
 function playPauseSong() { if (audio.paused) audio.play(); else audio.pause(); }
 function nextSong() { currentSongIndex = (currentSongIndex + 1) % songFiles.length; loadSong(currentSongIndex); }
 function prevSong() { currentSongIndex = (currentSongIndex - 1 + songFiles.length) % songFiles.length; loadSong(currentSongIndex); }
@@ -48,7 +73,10 @@ prevSongButton.addEventListener('click', prevSong);
 nextSongButton.addEventListener('click', nextSong);
 playPauseButton.addEventListener('click', playPauseSong);
 audio.addEventListener('ended', nextSong);
-volumeSlider.addEventListener('input', (e) => audio.volume = e.target.value);
+volumeSlider.addEventListener('input', (e) => {
+    maxVolume = e.target.value; 
+    audio.volume = maxVolume;
+});
 audio.onplay = () => playPauseButton.innerText = "⏸️ Pausa";
 audio.onpause = () => playPauseButton.innerText = "▶️ Play";
 
@@ -74,7 +102,7 @@ function showNextMessage() {
 }
 
 messageButton.addEventListener('click', () => {
-    if (!musicStarted) { loadSong(currentSongIndex); musicStarted = true; document.querySelectorAll('.music-button, .volume-control').forEach(el => el.classList.add('visible')); }
+    if (!musicStarted) { loadSong(currentSongIndex, true); musicStarted = true; document.querySelectorAll('.music-button, .volume-control').forEach(el => el.classList.add('visible')); }
     if (isFirstClick) { messageButton.innerHTML = "Siguiente mensaje 💕"; isFirstClick = false; }
     showNextMessage();
 });
@@ -107,35 +135,43 @@ function calculateTimeDiff(startDate, elementId) {
 
 setInterval(() => { calculateTimeDiff(startDateLucky, 'countdown'); calculateTimeDiff(startDateCouple, 'countdown-pareja'); }, 1000);
 
-// --- LÓGICA DE CARTAS (TYPING) Y VARIABLES GLOBALES ---
-const letterAudio = document.getElementById('letter-music');
-const galleryAudio = document.getElementById('gallery-music');
-let mainMusicPlaying = false;
-let typingInterval;
+// --- ESTRELLAS FUGACES ---
+let shootingStarInterval;
+function createShootingStar() {
+    const containers = document.querySelectorAll('.modal.visible .shooting-stars-container');
+    if (containers.length === 0) return; // Solo crear si hay un modal abierto
 
-// GESTIÓN DE PLAYLIST DE ANIVERSARIO
-const anniversaryPlaylist = [
-    "Música_aniversario/Punaladas.mp3", 
-    "Música_aniversario/I_Wouldn't_Mind_by_He_Is_We.mp3", 
-    "Música_aniversario/Magia.mp3"
-];
-let currentAnniversaryIdx = 0;
-let isAnniversaryActive = false;
-let currentPageIdx = 0;
+    const star = document.createElement('div');
+    star.classList.add('shooting-star');
+    // Posición aleatoria arriba o a la derecha
+    star.style.top = `${Math.random() * 50}%`;
+    star.style.left = `${Math.random() * 80 + 20}%`;
+    
+    containers[0].appendChild(star);
+    setTimeout(() => star.remove(), 2000);
+}
+
+function startShootingStars() {
+    if (shootingStarInterval) clearInterval(shootingStarInterval);
+    shootingStarInterval = setInterval(() => {
+        // 30% de probabilidad de que salga una estrella cada 3 segundos
+        if (Math.random() > 0.7) createShootingStar(); 
+    }, 3000);
+}
+function stopShootingStars() {
+    clearInterval(shootingStarInterval);
+}
 
 // --- GALERÍA AUTO ---
 const galleryModal = document.getElementById('gallery-modal');
 const galleryImage = document.getElementById('gallery-image');
+// Asumiendo que eventualmente las cambiarás a .webp, aquí usamos tu ruta actual.
 const images = Array.from({length: 28}, (_, i) => `Fotos_juntos/Foto${i+1}.jpg`);
 let currentImgIdx = 0;
 let galInterval;
 
-// Novedad: Función para precargar imágenes en caché
 function preloadGalleryImages() {
-    images.forEach(src => {
-        const img = new Image();
-        img.src = src;
-    });
+    images.forEach(src => { const img = new Image(); img.src = src; });
 }
 
 function showImg(idx) {
@@ -165,9 +201,9 @@ document.querySelector('#gallery-modal .close-button').addEventListener('click',
 });
 
 document.querySelector('.prev').addEventListener('click', () => {
-    clearInterval(galInterval); // Opcional: pausar autoplay al cambiar manual
+    clearInterval(galInterval); 
     showImg(currentImgIdx - 1);
-    galInterval = setInterval(() => showImg(currentImgIdx + 1), 4000); // Reiniciar timer
+    galInterval = setInterval(() => showImg(currentImgIdx + 1), 4000); 
 });
 document.querySelector('.next').addEventListener('click', () => {
     clearInterval(galInterval);
@@ -175,10 +211,37 @@ document.querySelector('.next').addEventListener('click', () => {
     galInterval = setInterval(() => showImg(currentImgIdx + 1), 4000);
 });
 
-function typeWriter(element, htmlContent, container) {
+// --- LÓGICA DE CARTAS (TYPING Y SKIP) ---
+const letterAudio = document.getElementById('letter-music');
+const galleryAudio = document.getElementById('gallery-music');
+let mainMusicPlaying = false;
+let typingInterval;
+let isTyping = false;
+let currentHtmlContent = "";
+let currentContainer = null;
+let currentElement = null;
+
+// GESTIÓN DE PLAYLIST DE ANIVERSARIO
+const anniversaryPlaylist = [
+    "Música_aniversario/Punaladas.mp3", 
+    "Música_aniversario/I_Wouldn't_Mind_by_He_Is_We.mp3", 
+    "Música_aniversario/Magia.mp3"
+];
+let currentAnniversaryIdx = 0;
+let isAnniversaryActive = false;
+let currentPageIdx = 0;
+
+function typeWriter(element, htmlContent, container, skipBtn) {
     element.innerHTML = "";
     let i = 0;
     clearInterval(typingInterval);
+    isTyping = true;
+    currentHtmlContent = htmlContent;
+    currentElement = element;
+    currentContainer = container;
+    
+    if(skipBtn) skipBtn.style.display = 'inline-block';
+
     typingInterval = setInterval(() => {
         if (i < htmlContent.length) {
             if (htmlContent.charAt(i) === "<") i = htmlContent.indexOf(">", i) + 1;
@@ -188,40 +251,68 @@ function typeWriter(element, htmlContent, container) {
             container.scrollTop = container.scrollHeight;
         } else {
             element.innerHTML = htmlContent;
+            isTyping = false;
             clearInterval(typingInterval);
+            if(skipBtn) skipBtn.style.display = 'none';
         }
     }, 57); 
 }
 
-// Para la "Carta Para Ti"
-function updateLetterPage() {
+function skipTyping() {
+    if (isTyping && currentElement) {
+        clearInterval(typingInterval);
+        currentElement.innerHTML = currentHtmlContent;
+        isTyping = false;
+        document.querySelectorAll('.skip-btn').forEach(btn => btn.style.display = 'none');
+    }
+}
+
+// Botones de salto
+document.getElementById('skip-typing-button').addEventListener('click', skipTyping);
+document.getElementById('skip-anniversary-btn').addEventListener('click', skipTyping);
+
+// Carta Para Ti Dinámica
+function updateLetterPage(withFade = false) {
     const pages = document.querySelectorAll('#letter-modal .letter-page');
     const title = document.getElementById('modal-title');
     const prevBtn = document.getElementById('prev-page');
     const nextBtn = document.getElementById('next-page');
     const container = document.getElementById('letter-text');
+    const skipBtn = document.getElementById('skip-typing-button');
+    const contentBox = document.querySelector('#letter-modal .letter-content');
 
-    pages.forEach((p, idx) => p.classList.toggle('active', idx === currentPageIdx));
-    
-    // Títulos dinámicos según la página
-    if(currentPageIdx === 0) title.innerText = "Unas Palabras Solo Para Ti...";
-    else if(currentPageIdx === 1) title.innerText = "Nuestro Primer Mes ❤️";
-    else if(currentPageIdx === 2) title.innerText = "Dos Meses de Amor 💞";
-    else if(currentPageIdx === 3) title.innerText = "Tres Meses Juntos ✨";
-    else if(currentPageIdx === 4) title.innerText = "Cuatro Meses de Felicidad 💖";
-    else if(currentPageIdx === 5) title.innerText = "Cinco Meses Juntitos 💖";
-    else if(currentPageIdx === 6) title.innerText = "Seis Meses Inolvidables 💍";
-    else if(currentPageIdx === 7) title.innerText = "Siete Meses de Magia ✨";
-    else if(currentPageIdx === 8) title.innerText = "Ocho Meses Contigo 💖";
+    const updateContent = () => {
+        pages.forEach((p, idx) => p.classList.toggle('active', idx === currentPageIdx));
+        
+        // Títulos dinámicos
+        if(currentPageIdx === 0) title.innerText = "Unas Palabras Solo Para Ti...";
+        else if(currentPageIdx === 1) title.innerText = "Nuestro Primer Mes ❤️";
+        else if(currentPageIdx === 2) title.innerText = "Dos Meses de Amor 💞";
+        else if(currentPageIdx === 3) title.innerText = "Tres Meses Juntos ✨";
+        else if(currentPageIdx === 4) title.innerText = "Cuatro Meses de Felicidad 💖";
+        else if(currentPageIdx === 5) title.innerText = "Cinco Meses Juntitos 💖";
+        else if(currentPageIdx === 6) title.innerText = "Seis Meses Inolvidables 💍";
+        else if(currentPageIdx === 7) title.innerText = "Siete Meses de Magia ✨";
+        else if(currentPageIdx === 8) title.innerText = "Ocho Meses Contigo 💖";
 
-    prevBtn.style.display = (currentPageIdx === 0) ? 'none' : 'inline-block';
-    nextBtn.style.display = (currentPageIdx === pages.length - 1) ? 'none' : 'inline-block';
+        prevBtn.style.display = (currentPageIdx === 0) ? 'none' : 'inline-block';
+        nextBtn.style.display = (currentPageIdx === pages.length - 1) ? 'none' : 'inline-block';
 
-    const activePage = pages[currentPageIdx];
-    const originalHTML = activePage.getAttribute('data-original') || activePage.innerHTML;
-    if (!activePage.getAttribute('data-original')) activePage.setAttribute('data-original', originalHTML);
-    
-    typeWriter(activePage, originalHTML, container);
+        const activePage = pages[currentPageIdx];
+        const originalHTML = activePage.getAttribute('data-original') || activePage.innerHTML;
+        if (!activePage.getAttribute('data-original')) activePage.setAttribute('data-original', originalHTML);
+        
+        typeWriter(activePage, originalHTML, container, skipBtn);
+        if (withFade) contentBox.classList.remove('fade-out');
+    };
+
+    if (withFade) {
+        contentBox.classList.add('fade-out');
+        clearInterval(typingInterval);
+        setTimeout(updateContent, 400); // Esperar a que haga fade-out para cambiar texto
+    } else {
+        updateContent();
+    }
 }
 
 document.getElementById('letter-button').addEventListener('click', () => {
@@ -232,7 +323,8 @@ document.getElementById('letter-button').addEventListener('click', () => {
     letterAudio.src = 'canciones-carta/A_Thousand_Years.mp3';
     letterAudio.loop = true;
     letterAudio.play().catch(e => console.log(e));
-    updateLetterPage();
+    updateLetterPage(false);
+    startShootingStars(); // Iniciar estrellas
 });
 
 document.getElementById('anniversary-button').addEventListener('click', () => {
@@ -242,33 +334,60 @@ document.getElementById('anniversary-button').addEventListener('click', () => {
     const modal = document.getElementById('anniversary-modal');
     const container = document.getElementById('anniversary-text');
     const page = modal.querySelector('.anniversary-page');
+    const skipBtn = document.getElementById('skip-anniversary-btn');
     
     modal.classList.add('visible');
     letterAudio.src = anniversaryPlaylist[0];
     letterAudio.loop = false;
     letterAudio.play().catch(e => console.log(e));
+    startShootingStars();
     
     const originalHTML = page.getAttribute('data-original') || page.innerHTML;
     if (!page.getAttribute('data-original')) page.setAttribute('data-original', originalHTML);
-    setTimeout(() => typeWriter(page, originalHTML, container), 600);
+    
+    setTimeout(() => typeWriter(page, originalHTML, container, skipBtn), 600);
 });
 
 document.getElementById('next-page').addEventListener('click', () => { 
     const pagesCount = document.querySelectorAll('#letter-modal .letter-page').length;
-    if(currentPageIdx < pagesCount - 1) { currentPageIdx++; updateLetterPage(); }
+    if(currentPageIdx < pagesCount - 1) { 
+        if(isTyping) skipTyping(); // Si estaba escribiendo, completarlo primero no dañar el fade
+        currentPageIdx++; 
+        updateLetterPage(true); 
+    }
 });
 document.getElementById('prev-page').addEventListener('click', () => { 
-    if(currentPageIdx > 0) { currentPageIdx--; updateLetterPage(); }
+    if(currentPageIdx > 0) { 
+        if(isTyping) skipTyping();
+        currentPageIdx--; 
+        updateLetterPage(true); 
+    }
 });
 
 function closeAllLetters() {
     clearInterval(typingInterval);
+    document.querySelectorAll('.skip-btn').forEach(btn => btn.style.display = 'none');
     document.querySelectorAll('.modal').forEach(m => {
         if(m.id !== 'gallery-modal') m.classList.remove('visible');
     });
     letterAudio.pause();
     isAnniversaryActive = false;
-    if (mainMusicPlaying) { audio.play(); mainMusicPlaying = false; }
+    stopShootingStars();
+    if (mainMusicPlaying) { 
+        // Restaurar música principal con un pequeño fade
+        audio.volume = 0;
+        audio.play(); 
+        let vol = 0;
+        const resInterval = setInterval(() => {
+            if (vol < maxVolume) {
+                vol += 0.05;
+                audio.volume = Math.min(vol, maxVolume);
+            } else {
+                clearInterval(resInterval);
+            }
+        }, 150);
+        mainMusicPlaying = false; 
+    }
 }
 
 document.querySelectorAll('.close-letter-button').forEach(btn => btn.addEventListener('click', closeAllLetters));
