@@ -97,4 +97,54 @@ p#message { font-size: 1.25em; color: #444; font-weight: 600; line-height: 1.6; 
 .typing-cursor { display: inline-block; width: 2.5px; height: 1.3em; background-color: #c83b50; margin-left: 3px; vertical-align: middle; animation: blink-cursor 0.8s infinite; }
 @keyframes blink-cursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-@media (max-width: 768px) { body { padding: 10px; align-items: flex-start; } .container { padding: 25px 20px; max-width: 95%; gap: 10px; } h1 { font-size: 1.8em; } .countdown-display { font-size: 0.9em; } .letter-content { padding: 30px 20px; width: 92vw; } }
+/* --- DISEÑO RESPONSIVO (MÓVILES Y TABLETS) --- */
+@media (max-width: 768px) {
+    body { padding: 15px 10px; align-items: flex-start; }
+    .container { padding: 25px 20px; max-width: 95%; gap: 12px; margin: 10px 0; }
+    h1 { font-size: 2.2em; }
+    .countdown-display { font-size: 1.05em; }
+    .letter-content { padding: 30px 25px; width: 92vw; }
+    .extra-buttons { flex-direction: column; align-items: center; gap: 10px; }
+    .extra-buttons button { width: 100%; max-width: 320px; }
+}
+
+@media (max-width: 480px) {
+    h1 { font-size: 1.8em; }
+    .timer-text { font-size: 0.9em; }
+    .countdown-display { font-size: 0.85em; }
+    
+    .message-box { height: 120px; padding: 10px; }
+    p#message { font-size: 1.1em; }
+    
+    #message-button { padding: 12px 20px; font-size: 0.95em; width: 100%; max-width: 300px; }
+    
+    .music-controls { flex-wrap: wrap; justify-content: center; gap: 8px; width: 100%; }
+    .music-button { padding: 8px 12px; font-size: 0.85em; flex-grow: 1; text-align: center; }
+    
+    /* Ajustes del modal de cartas para móviles */
+    .letter-content { padding: 20px 15px; height: 88vh; }
+    .close-letter-button { top: 5px; right: 15px; font-size: 32px; }
+    .letter-content h2 { font-size: 1.8em; margin-top: 15px; margin-bottom: 15px; }
+    
+    /* Escalar texto manuscrito de las cartas */
+    .letter-text-box p, #letter-text p, #anniversary-text p { 
+        font-size: 1.05em; 
+        line-height: 2.2; 
+        text-underline-offset: 8px; 
+    }
+    
+    /* Controles de paginación */
+    .letter-controls { flex-direction: row; gap: 10px; justify-content: space-between; }
+    .nav-btn { padding: 10px 15px; font-size: 0.85em; width: 48%; }
+    
+    /* Galería */
+    .prev, .next { padding: 12px; font-size: 18px; margin-top: -15px; }
+    .close-button { top: 10px; right: 15px; font-size: 35px; }
+}
+
+@media (max-width: 360px) {
+    h1 { font-size: 1.5em; }
+    .countdown-display { font-size: 0.75em; }
+    .letter-content h2 { font-size: 1.5em; }
+    .letter-text-box p, #letter-text p, #anniversary-text p { font-size: 0.95em; }
+}
